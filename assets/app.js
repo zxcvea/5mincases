@@ -126,7 +126,7 @@ const Interface = {
   },
 
   Zoom: function(e) {
-    if (e.scale <= Interface.SCALE * 2 || e.scale >= Interface.SCALE) {
+    if (e.scale <= Interface.SCALE * 2 && e.scale >= Interface.SCALE) {
       $(".scene:eq(" + Template.SCENE_INDEX + ")").css({
         transform: "scale(" + e.scale + ") "
       });
