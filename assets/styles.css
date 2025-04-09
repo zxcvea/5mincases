@@ -433,9 +433,9 @@ input:-webkit-autofill:active
 
 #cards { z-index: 120; }
 #scenes { z-index: 110; }
-.puzzle { position: absolute;}
+.sceneInner, .puzzle { position: absolute;}
 
-.card, .card .inner, .front, .back, .scene, .puzzle {
+.card, .card .inner, .front, .back, .sceneInner, .scene, .puzzle {
   display: block;
   width: 825px;
   height: 1152px;

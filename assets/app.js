@@ -60,6 +60,7 @@ const Interface = {
   DEFAULT_HEIGHT: 1152,
   WINDOW_WIDTH: 0,
   WINDOW_HEIGHT: 0,
+  IS_ZOOMED_IN: false,
 
   CreateContainer: function() {
     const container = '<div id="main"><div id="container"><div id="cards"></div><div id="scenes"></div></div></div>';
@@ -114,6 +115,24 @@ const Interface = {
 
     $('#cards').width(($('.card:visible').length * $('#container').width()) + 1);
     $('#scenes').width(($('.scene:visible').length * $('#container').width()) + 1);
+  },
+
+  Zoom: function(e) {
+    console.log(e.scale);
+    if (e.scale <= 4 || e.scale > 0.25) {
+      let rotation;
+      if (Device.isMobileLandscape()) {
+        rotation = '90deg';
+      } else if (Device.isMobilePortrait()) {
+        rotation = '0deg';
+      } else {
+        rotation = '0deg';
+      }
+
+      $(".scene:eq(" + Template.SCENE_INDEX + ")").css({
+        transform: "translate(-50%, -50%) " + "scale(" + e.scale + ") " + "rotate(" + rotation + ")"
+      });
+    }
   },
 
   Events: function() {
@@ -201,7 +220,7 @@ const Template = {
   },
 
   BuildScene: function(index, puzzles) {
-    const scene = '<div class="scene scene' + (index % 5) + '"><div class="puzzle puzzle' + (puzzles[(index % 5)][Data.SCENE_TRACK[(index % 5)]]) + '"></div></div>';
+    const scene = '<div class="scene"><div class="sceneInner scene' + (index % 5) + '"><div class="puzzle puzzle' + (puzzles[(index % 5)][Data.SCENE_TRACK[(index % 5)]]) + '"></div></div></div>';
     $('#scenes').append(scene);
     Data.SCENE_TRACK[(index % 5)] += 1;
   },
@@ -336,6 +355,8 @@ const Template = {
   Events: function() {
     const hitArea = document.getElementById('container');
     const hammer = new Hammer(hitArea);
+    hammer.get("pinch").set({ enable: true });
+    
     hammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
     hammer.on("swipeleft", function() {
       Template.NavigateHorizontal('right', 'down');
@@ -348,6 +369,14 @@ const Template = {
     });
     hammer.on("swipedown", function() {
       Template.NavigateVertical('left', 'down');
+    });
+    
+    hammer.on("pinch", function(e) {
+      Interface.Zoom(e);
+    });
+
+    hammer.on("pinchend", function(e) {
+
     });
 
     $(document).on("keyup", function(e) {
@@ -418,15 +447,12 @@ const Data = {
 
   LoadDataSource: function(url) {
     url = Data.Clean(url);
-    console.log(url);
     $.ajax({
       dataType: "json",
       url: url,
       async: false,
       success: function(data) {
-        console.log(data);
         Cases = data.Cases;
-        
         if (Settings.STARTUP) {
           Template.Init();
           Settings.STARTUP = false;
