@@ -60,6 +60,7 @@ const Interface = {
   DEFAULT_HEIGHT: 1152,
   WINDOW_WIDTH: 0,
   WINDOW_HEIGHT: 0,
+  SCALE: 0,
   IS_ZOOMED_IN: false,
 
   CreateContainer: function() {
@@ -113,25 +114,32 @@ const Interface = {
       transform: "translate(-50%, -50%) " + "scale(" + scale + ") " + "rotate(" + rotation + ")"
     });
 
+    Interface.SCALE = scale;
+
     $('#cards').width(($('.card:visible').length * $('#container').width()) + 1);
     $('#scenes').width(($('.scene:visible').length * $('#container').width()) + 1);
   },
 
-  Zoom: function(e) {
-    console.log(e.scale);
-    if (e.scale <= 4 || e.scale >= 1) {
-      let rotation;
-      if (Device.isMobileLandscape()) {
-        rotation = '90deg';
-      } else if (Device.isMobilePortrait()) {
-        rotation = '0deg';
-      } else {
-        rotation = '0deg';
-      }
+  ResetZoom: function() {
+    $(".scene").css({
+      transform: "scale(" + scale + ") "
+    });
+    Interface.IS_ZOOMED_IN = false;
+  },
 
+  Zoom: function(e) {
+    let scale;
+    if (Device.isMobileLandscape()) {
+      scale = (($(window).innerHeight() - 20) * e.scale) / Interface.DEFAULT_WIDTH;
+    } else if (Device.isMobilePortrait()) {
+      scale = (($(window).innerWidth() - 20) * e.scale) / Interface.DEFAULT_WIDTH;
+    }
+
+    if (scale <= Interface.SCALE * 2 || scale >= Interface.SCALE) {
       $(".scene:eq(" + Template.SCENE_INDEX + ")").css({
-        transform: "translate(-50%, -50%) " + "scale(" + e.scale + ") " + "rotate(" + rotation + ")"
+        transform: "scale(" + scale + ") "
       });
+      Interface.IS_ZOOMED_IN = true;
     }
   },
 
@@ -273,6 +281,8 @@ const Template = {
   },
 
   NavigateScenes: function(direction) {
+    Interface.ResetZoom();
+
     if ((direction == 'left' && Template.SCENE_INDEX == 0) || (direction == 'right' && Template.SCENE_INDEX == ($('.scene:visible').length - 1))) {
       return;
     }
