@@ -60,7 +60,7 @@ const Interface = {
   DEFAULT_HEIGHT: 1152,
   WINDOW_WIDTH: 0,
   WINDOW_HEIGHT: 0,
-  SCALE: 0,
+  SCALE: 1,
   IS_ZOOMED_IN: false,
 
   CreateContainer: function() {
@@ -114,30 +114,21 @@ const Interface = {
       transform: "translate(-50%, -50%) " + "scale(" + scale + ") " + "rotate(" + rotation + ")"
     });
 
-    Interface.SCALE = scale;
-
     $('#cards').width(($('.card:visible').length * $('#container').width()) + 1);
     $('#scenes').width(($('.scene:visible').length * $('#container').width()) + 1);
   },
 
   ResetZoom: function() {
     $(".scene").css({
-      transform: "scale(" + scale + ") "
+      transform: "scale(" + Interface.SCALE + ") "
     });
     Interface.IS_ZOOMED_IN = false;
   },
 
   Zoom: function(e) {
-    let scale;
-    if (Device.isMobileLandscape()) {
-      scale = (($(window).innerHeight() - 20) * e.scale) / Interface.DEFAULT_WIDTH;
-    } else if (Device.isMobilePortrait()) {
-      scale = (($(window).innerWidth() - 20) * e.scale) / Interface.DEFAULT_WIDTH;
-    }
-
-    if (scale <= Interface.SCALE * 2 || scale >= Interface.SCALE) {
+    if (e.scale <= Interface.SCALE * 2 || e.scale >= Interface.SCALE) {
       $(".scene:eq(" + Template.SCENE_INDEX + ")").css({
-        transform: "scale(" + scale + ") "
+        transform: "scale(" + e.scale + ") "
       });
       Interface.IS_ZOOMED_IN = true;
     }
