@@ -119,7 +119,7 @@ const Interface = {
 
   Zoom: function(e) {
     console.log(e.scale);
-    if (e.scale <= 4 || e.scale > 0.25) {
+    if (e.scale <= 4 || e.scale >= 1) {
       let rotation;
       if (Device.isMobileLandscape()) {
         rotation = '90deg';
