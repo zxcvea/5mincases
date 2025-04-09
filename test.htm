@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Pinch Zoom</title>
+
+  <style>
+
+    .demo-box {
+      width: 300px;
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .demo-box > img {
+      height: 400px;
+      width: 1900px;
+      position: absolute;
+      margin-left: -950px;
+      display: none;
+      pointer-events: none;
+      margin-top: -220px;
+      left: 50%;
+      top: 50%;
+      max-width: none;
+    }
+
+    .demo-box-wrap, .target-wrap {
+      border: 1px solid #333;
+      background: #333;
+      width: 300px;
+      height: 200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .demo-box img.active {
+      display: block;
+    }
+
+  </style>
+
+</head>
+
+<body class="homepage">
+
+  <div>
+
+    <div style="height:150px;background-color:#eeeeee">
+      Ignore this area. Space is needed to test on the iPhone simulator as pinch simulation on the iPhone simulator requires the target to be near the middle of the screen and we only respect touch events in the image area. This space is not needed in production.
+    </div>
+
+    <div class="demo-box-wrap">
+      <div class="demo-box pinch">
+        <img class="active" src="https://hammerjs.github.io/assets/img/pano-1.jpg">
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://hammerjs.github.io/dist/hammer.js"></script>
+
+  <script>
+
+    (function() {
+
+      var el = document.querySelector(".pinch");
+      var ham = new Hammer( el, {
+        domEvents: true
+      } );
+      var width = 1900;
+      var height = 400;
+      var left = 950;
+      var top = 220;
+
+      ham.get('pinch').set({ enable: true });
+
+      ham.on( "pinch", function( e ) {
+        console.log( "pinch" );
+        if ( width * e.scale >= 300 ) {
+          var img = el.childNodes[1];
+          img.style.width = (width * e.scale) + 'px';
+          img.style.marginLeft = (-left * e.scale) + 'px';
+          img.style.height = (height * e.scale) + 'px';
+          img.style.marginTop = (-top * e.scale) + 'px';
+         }
+         console.log( e.scale );
+      } );
+
+      ham.on( "pinchend", function( e ) {
+        width = width * e.scale;
+        height = height * e.scale;
+        left = left * e.scale;
+        top = top * e.scale;
+        console.log( width );
+      } );
+
+    } )();
+
+  </script>
+
+</body>
+</html>
+@nnguye2
+Comment
+ 
+Leave a comment
+ 
+Footer
+© 2025 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Docs
+Contact
+Manage cookies
+Do not share my personal information

@@ -1,0 +1,104 @@
+{
+  "Cases": [
+    {
+      "Difficulty": "veteran",
+      "Title": "The Single Pile",
+      "Overview": "There we go, I've gathered all the clues into one big pile by the fireplace. |Does...does that not help?",
+      "Instruction": "Mix the clues into a single pile. Take the top clue when you earn one. |<i>(You can't pick which color clue you get when you solve a scene.)</i>",
+      "Task": "Catch one culprit.",
+      "TimeLimit": 5,
+      "TextSize": "default",
+      "CardBackground": "default"
+    },
+    {
+      "Difficulty": "veteran",
+      "Title": "The Cat in the Crowd",
+      "Overview": "Our cameras caught Colton stealing the MacGuffin but he has run off into the crowd. |Find him before he can escape.",
+      "Instruction": "Do not select a random culprit and mix the culprit tiles. Whenever you solve a scene, flip over two culprit tiles. |<i>(Repeat until you catch Colton.)</i>",
+      "Task": "Find and catch Colton.",
+      "TimeLimit": 5,
+      "TextSize": "default",
+      "CardBackground": "default"
+    },
+    {
+      "Difficulty": "veteran",
+      "Title": "Not Catching a Cold",
+      "Overview": "I'm afraid some guests have left their umbrellas. |Find the guests which whom they belong to, otherwise they might get a nasty cold from the rain!",
+      "Instruction": "Do not select a random culprit and mix the culprit tiles. Start with the umbrella and fan clues. Whenever you solve a scene, pick two culprit tiles. |<i>(Repeat until you find the culprits that match both clues.)</i>",
+      "Task": "Find two matches.",
+      "TimeLimit": 5,
+      "TextSize": "small",
+      "CardBackground": "default"
+    },
+    {
+      "Difficulty": "veteran",
+      "Title": "The Misplaced MacGuffin",
+      "Overview": "Our curator has forgotten where he placed the MacGuffin. |He seems to only recall that it was in a room filled with these symbols. |Help him find where |he misplaced it!",
+      "Instruction": "Find a scene that matches these symbols |{A4}{B4}{C4} |<i>(You do not have to solve each scene)</i>",
+      "Task": "You do not need to choose or catch a random culprit.",
+      "TimeLimit": 3,
+      "TextSize": "default",
+      "CardBackground": "default"
+    },
+    {
+      "Difficulty": "veteran",
+      "Title": "The Lost Jewelry",
+      "Overview": "We caught the thief red handed, carrying a sack of valuable jewelry. |Now we have to find whom each item belongs to!",
+      "Instruction": "Start with the necklace clue and mix the culprit tiles. Whenever you solve a scene, pick two culprit tiles and check if they match with the necklace clue. ",
+      "Task": "Find five matches.",
+      "TimeLimit": 5,
+      "TextSize": "default",
+      "CardBackground": "default"
+    },
+    {
+      "Difficulty": "veteran",
+      "Title": "The Aardvark Alibi",
+      "Overview": "We have four suspects in custody for interrogation. All proclaim innocence and have provided alibis, but one is lying. |Help us find the culprit!",
+      "Instruction": "Start with [name1], [name2], [name3] and [name4] culprit tiles and remove the [clue1] and [clue2] clues.",
+      "Task": "Catch one culprit.",
+      "TimeLimit": 5,
+      "TextSize": "default",
+      "CardBackground": "security"
+    },
+    {
+      "Difficulty": "detective",
+      "Title": "Crowd Confusion",
+      "Overview": "I spotted [name1] and [name2] run off into the crowd with the MacGuffin! |Catch them before they can escape.",
+      "Instruction": "Mix the culprit tiles. Whenever you solve a scene, flip over two culprit tiles. |<i>(Repeat until you catch both culprits.)</i>",
+      "Task": "Find and catch [name1] and [name2].",
+      "TimeLimit": 5,
+      "TextSize": "default",
+      "CardBackground": "default"
+    },
+    {
+      "Difficulty": "detective",
+      "Title": "The Missing Walrus",
+      "Overview": "Someone has kidnapped the manager! |Help us find whoever did it!",
+      "Instruction": "Mix the culprit tiles. Whenever you solve a scene, flip over two culprit tiles. |<i>(Repeat until you catch both culprits.)</i>",
+      "Task": "Find and catch [name1] and [name2].",
+      "TimeLimit": 5,
+      "TextSize": "default",
+      "CardBackground": "security"
+    },
+    {
+      "Difficulty": "detective",
+      "Title": "The Callous Calling Card",
+      "Overview": "The thief left their calling card at the scene of the crime. |Catch them before they can escape.",
+      "Instruction": "Collect a clue only if the solved scene contains one of |{A4} or {C3} or {E1} |<i>(Do not collect a clue if the scene does not contain any of these symbols.)</i>",
+      "Task": "Catch one culprit.",
+      "TimeLimit": 5,
+      "TextSize": "default",
+      "CardBackground": "default"
+    },
+    {
+      "Difficulty": "master",
+      "Title": "The Doomsday Calendar",
+      "Overview": "Doomsday is upon us! The Apocalypse can be averted if we bring the idol to the room with these symbols. Quickly... we must act at once!",
+      "Instruction": "Find a scene that matches these symbols |{A4}{B4}{C4} |<i>(You must solve each scene)</i>",
+      "Task": "You do not need to choose or catch a random culprit.",
+      "TimeLimit": 7,
+      "TextSize": "default",
+      "CardBackground": "default"
+    }
+  ]
+}
