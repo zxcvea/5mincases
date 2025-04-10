@@ -1,6 +1,6 @@
 const PinchZoom = {
   MIN_SCALE: 1, // 1=scaling when first loaded
-  MAX_SCALE: 64,
+  MAX_SCALE: 3,
 
   // HammerJS fires "pinch" and "pan" events that are cumulative in nature and not
   // deltas. Therefore, we need to store the "last" values of scale, x and y so that we can
@@ -32,12 +32,12 @@ const PinchZoom = {
 
   // We need to disable the following event handlers so that the browser doesn't try to
   // automatically handle our image drag gestures.
-  disableImgEventHandlers: function () {
+  disableImgEventHandlers: function() {
     const events = ['onclick', 'onmousedown', 'onmousemove', 'onmouseout', 'onmouseover',
                   'onmouseup', 'ondblclick', 'onfocus', 'onblur'];
 
     events.forEach(function (event) {
-      PinchZoom.ELEMENT[event] = function () {
+      PinchZoom.ELEMENT[event] = function() {
         return false;
       };
     });
@@ -82,14 +82,15 @@ const PinchZoom = {
   translate: function (deltaX, deltaY) {
     // We restrict to the min of the viewport width/height or current width/height as the
     // current width/height may be smaller than the viewport width/height
-
     const newX = PinchZoom.restrictRawPos(PinchZoom.LAST_X + deltaX / PinchZoom.SCALE, Math.min(PinchZoom.VIEWPORT_WIDTH, PinchZoom.CUR_WIDTH), PinchZoom.IMG_WIDTH);
     PinchZoom.X = newX;
-    document.getElementById(PinchZoom.ELEMENT_ID).style.marginLeft = Math.ceil(newX * PinchZoom.SCALE) + 'px';
+    const newLeft = Math.ceil(newX * PinchZoom.SCALE);
+    $('#pinch-zoom-image-id').css({ marginLeft: newLeft + 'px' });
 
     const newY = PinchZoom.restrictRawPos(PinchZoom.LAST_Y + deltaY / PinchZoom.SCALE, Math.min(PinchZoom.VIEWPORT_HEIGHT, PinchZoom.CUR_HEIGHT), PinchZoom.IMG_HEIGHT);
     PinchZoom.Y = newY;
-    document.getElementById(PinchZoom.ELEMENT_ID).style.marginTop = Math.ceil(newY * PinchZoom.SCALE) + 'px';
+    const newTop = Math.ceil(newY * PinchZoom.SCALE);
+    $('#pinch-zoom-image-id').css({ marginTop: newTop + 'px' });
   },
 
   zoom: function (scaleBy) {
@@ -98,8 +99,8 @@ const PinchZoom = {
     PinchZoom.CUR_WIDTH = PinchZoom.IMG_WIDTH * PinchZoom.SCALE;
     PinchZoom.CUR_HEIGHT = PinchZoom.IMG_HEIGHT * PinchZoom.SCALE;
 
-    document.getElementById(PinchZoom.ELEMENT_ID).style.width = Math.ceil(PinchZoom.CUR_WIDTH) + 'px';
-    document.getElementById(PinchZoom.ELEMENT_ID).style.height = Math.ceil(PinchZoom.CUR_HEIGHT) + 'px';
+    $('#pinch-zoom-image-id').css({ width: Math.ceil(PinchZoom.CUR_WIDTH) + 'px' });
+    $('#pinch-zoom-image-id').css({ height: Math.ceil(PinchZoom.CUR_HEIGHT) + 'px' });
 
     // Adjust margins to make sure that we aren't out of bounds
     PinchZoom.translate(0, 0);
@@ -118,7 +119,7 @@ const PinchZoom = {
     return { x: zoomX, y: zoomY };
   },
 
-  updateLastScale: function () {
+  updateLastScale: function() {
     PinchZoom.SCALE_LAST = PinchZoom.SCALE;
   },
 
@@ -129,6 +130,8 @@ const PinchZoom = {
     // New raw center of viewport
     const rawCenterX = -PinchZoom.X + Math.min(PinchZoom.VIEWPORT_WIDTH, PinchZoom.CUR_WIDTH) / 2 / PinchZoom.SCALE;
     const rawCenterY = -PinchZoom.Y + Math.min(PinchZoom.VIEWPORT_HEIGHT, PinchZoom.CUR_HEIGHT) / 2 / PinchZoom.SCALE;
+
+    console.log(rawCenterX +  ' ' + rawCenterY);
 
     // Delta
     const deltaX = (rawCenterX - rawZoomX) * PinchZoom.SCALE;
@@ -148,32 +151,38 @@ const PinchZoom = {
     const zoomX = -PinchZoom.X + Math.min(PinchZoom.VIEWPORT_WIDTH, PinchZoom.CUR_WIDTH) / 2 / PinchZoom.SCALE;
     const zoomY = -PinchZoom.Y + Math.min(PinchZoom.VIEWPORT_HEIGHT, PinchZoom.CUR_HEIGHT) / 2 / PinchZoom.SCALE;
 
+    console.log(zoomX +  ' ' + zoomY);
+
     PinchZoom.zoomAround(scaleBy, zoomX, zoomY);
   },
 
-  zoomIn: function () {
+  zoomIn: function() {
     PinchZoom.zoomCenter(2);
   },
 
-  zoomOut: function () {
+  zoomOut: function() {
     PinchZoom.zoomCenter(1/2);
   },
 
-  onLoad: function () {
+  init: function() {
 
-    PinchZoom.ELEMENT_ID = 'pinch-zoom-image-id';
-    PinchZoom.ELEMENT = document.getElementById(PinchZoom.ELEMENT_ID);
-    PinchZoom.CONTAINER_ID = 'scene';
-    PinchZoom.CONTAINER = document.getElementById(PinchZoom.CONTAINER_ID);
+  },
+
+  onLoad: function() {
+
+    PinchZoom.ELEMENT_ID = '#pinch-zoom-image-id';
+    PinchZoom.ELEMENT = document.getElementById('pinch-zoom-image-id');
+    PinchZoom.CONTAINER_ID = '#scene';
+    PinchZoom.CONTAINER = document.getElementById('scene');
 
     PinchZoom.disableImgEventHandlers();
 
-    PinchZoom.IMG_WIDTH = PinchZoom.ELEMENT.width;
-    PinchZoom.IMG_HEIGHT = PinchZoom.ELEMENT.height;
+    PinchZoom.IMG_WIDTH = $(PinchZoom.ELEMENT_ID).width();
+    PinchZoom.IMG_HEIGHT = $(PinchZoom.ELEMENT_ID).height();
+    PinchZoom.VIEWPORT_WIDTH = PinchZoom.IMG_WIDTH;
+    PinchZoom.VIEWPORT_HEIGHT = PinchZoom.IMG_HEIGHT;
     PinchZoom.SCALE = PinchZoom.VIEWPORT_WIDTH / PinchZoom.IMG_WIDTH;
     PinchZoom.SCALE_LAST = PinchZoom.SCALE;
-    PinchZoom.VIEWPORT_WIDTH = PinchZoom.CONTAINER.offsetWidth;
-    PinchZoom.VIEWPORT_HEIGHT = PinchZoom.CONTAINER.offsetHeight;
     PinchZoom.CUR_WIDTH = PinchZoom.IMG_WIDTH * PinchZoom.SCALE;
     PinchZoom.CUR_HEIGHT = PinchZoom.IMG_HEIGHT * PinchZoom.SCALE;
 
@@ -197,10 +206,10 @@ const PinchZoom = {
 
       // We only calculate the pinch center on the first pinch event as we want the center to
       // stay consistent during the entire pinch
-      if (pinchCenter === null) {
+      if (PinchZoom.PINCH_CENTER === null) {
         PinchZoom.PINCH_CENTER = PinchZoom.rawCenter(e);
-        const offsetX = pinchCenter.x * PinchZoom.SCALE - (-PinchZoom.X * PinchZoom.SCALE + Math.min(viewportWidth, curWidth) / 2);
-        const offsetY = pinchCenter.y * PinchZoom.SCALE - (-PinchZoom.Y * PinchZoom.SCALE + Math.min(viewportHeight, curHeight) / 2);
+        const offsetX = PinchZoom.PINCH_CENTER.x * PinchZoom.SCALE - (-PinchZoom.X * PinchZoom.SCALE + Math.min(PinchZoom.VIEWPORT_WIDTH, PinchZoom.CUR_WIDTH) / 2);
+        const offsetY = PinchZoom.PINCH_CENTER.y * PinchZoom.SCALE - (-PinchZoom.Y * PinchZoom.SCALE + Math.min(PinchZoom.VIEWPORT_HEIGHT, PinchZoom.CUR_HEIGHT) / 2);
         PinchZoom.PINCH_CENTER_OFFSET = { x: offsetX, y: offsetY };
       }
 
@@ -210,8 +219,8 @@ const PinchZoom = {
       // image. The new scale is then used to calculate the zoom center. This has the effect of
       // actually translating the zoom center on each pinch zoom event.
       const newScale = PinchZoom.restrictScale(PinchZoom.SCALE * e.scale);
-      const zoomX = pinchCenter.x * newScale - pinchCenterOffset.x;
-      const zoomY = pinchCenter.y * newScale - pinchCenterOffset.y;
+      const zoomX = PinchZoom.PINCH_CENTER.x * newScale - PinchZoom.PINCH_CENTER_OFFSET.x;
+      const zoomY = PinchZoom.PINCH_CENTER.y * newScale - PinchZoom.PINCH_CENTER_OFFSET.y;
       const zoomCenter = { x: zoomX / newScale, y: zoomY / newScale };
 
       PinchZoom.zoomAround(e.scale, zoomCenter.x, zoomCenter.y, true);
