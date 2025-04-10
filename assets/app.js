@@ -61,7 +61,6 @@ const Interface = {
   WINDOW_WIDTH: 0,
   WINDOW_HEIGHT: 0,
   SCALE: 1,
-  IS_ZOOMED_IN: false,
 
   CreateContainer: function() {
     const container = '<div id="main"><div id="container"><div id="cards"></div><div id="scenes"></div></div></div>';
@@ -116,22 +115,6 @@ const Interface = {
 
     $('#cards').width(($('.card:visible').length * $('#container').width()) + 1);
     $('#scenes').width(($('.scene:visible').length * $('#container').width()) + 1);
-  },
-
-  ResetZoom: function() {
-    $(".scene").css({
-      transform: "scale(" + Interface.SCALE + ") "
-    });
-    Interface.IS_ZOOMED_IN = false;
-  },
-
-  Zoom: function(e) {
-    if (e.scale <= Interface.SCALE * 2 && e.scale >= Interface.SCALE) {
-      $(".scene:eq(" + Template.SCENE_INDEX + ")").css({
-        transform: "scale(" + e.scale + ") "
-      });
-      Interface.IS_ZOOMED_IN = true;
-    }
   },
 
   Events: function() {
@@ -190,7 +173,7 @@ const Template = {
   SCENES_OFFSET: 0,
   DISPLAY_SETTINGS: false,
   SHOW_SCENES: false,
-  SHOW_STORY: false,
+  SHOW_SCENE_SOLUTION: false,
 
   CreateSettings: function() {
     let settingsCtn = '';
@@ -237,6 +220,7 @@ const Template = {
     $('#scenes').html($('.scene').sort(function() {
       return Math.random()-0.5;
     }));
+    $('.scene:eq(0) .sceneInner').addClass('zoom');
   },
 
   Refresh: function() {
@@ -272,8 +256,6 @@ const Template = {
   },
 
   NavigateScenes: function(direction) {
-    Interface.ResetZoom();
-
     if ((direction == 'left' && Template.SCENE_INDEX == 0) || (direction == 'right' && Template.SCENE_INDEX == ($('.scene:visible').length - 1))) {
       return;
     }
@@ -284,10 +266,12 @@ const Template = {
     Template.SCENES_OFFSET = movePos;
     Template.SCENE_INDEX = Template.SCENE_INDEX = (direction == 'right') ? Template.SCENE_INDEX + 1 : Template.SCENE_INDEX - 1;
 
+    $('.scene .sceneInner').removeClass('zoom');
     $('#scenes').animate({
       left: movePos + 'px'
     }, 300, function() {
-
+      $('.scene:eq(' + Template.SCENE_INDEX + ') .sceneInner').addClass('zoom');
+      PinchZoom.IS_ACTIVE = true;
     });
   },
 
@@ -303,32 +287,35 @@ const Template = {
       if (index < Cases.length) {
         const leftPos = -(index * $('#container').width());
         Template.CARD_INDEX = index;
-        Template.SHOW_STORY = false;
         Template.CARDS_OFFSET = leftPos;
         $('#cards').css('left', leftPos);
       }
     }
   },
 
-  ShowStory: function(direction) {
+  ShowScenes: function(direction) {
     if (direction == 'up' && !Template.SHOW_SCENES) {
       Template.SHOW_SCENES = true;
       let movePos = $('#container').height();
       $('#cards').animate({
         top: -movePos + 'px'
-      }, 300);
+      }, 300, function() {
+        PinchZoom.IS_ACTIVE = true;
+      });
     } else if (direction == 'down' && Template.SHOW_SCENES) {
       Template.SHOW_SCENES = false;
       $('#cards').animate({
         top: '0'
-      }, 300);
+      }, 300, function() {
+        PinchZoom.IS_ACTIVE = false;
+      });
     }
   },
 
   NavigateHorizontal: function(direction, altDirection) {
-    if (!Template.DISPLAY_SETTINGS) {
+    if (!Template.DISPLAY_SETTINGS && !PinchZoom.IS_ZOOMED_IN) {
       if (Device.isMobileLandscape()) {
-        Template.ShowStory(altDirection);
+        Template.ShowScenes(altDirection);
       } else {
         if (Template.SHOW_SCENES) {
           Template.NavigateScenes(direction);
@@ -340,7 +327,7 @@ const Template = {
   },
 
   NavigateVertical: function(direction, altDirection) {
-    if (!Template.DISPLAY_SETTINGS) {
+    if (!Template.DISPLAY_SETTINGS && !PinchZoom.IS_ZOOMED_IN) {
       if (Device.isMobileLandscape()) {
         if (Template.SHOW_SCENES) {
           Template.NavigateScenes(direction);
@@ -348,16 +335,15 @@ const Template = {
           Template.NavigateCards(direction);
         }
       } else {
-        Template.ShowStory(altDirection);
+        Template.ShowScenes(altDirection);
       }
     }
   },
 
   Events: function() {
-    const hitArea = document.getElementById('container');
-    const hammer = new Hammer(hitArea);
-    hammer.get("pinch").set({ enable: true });
-    
+    const hammer = new Hammer(document.getElementById('container'), {
+      domEvents: true
+    });
     hammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
     hammer.on("swipeleft", function() {
       Template.NavigateHorizontal('right', 'down');
@@ -371,13 +357,23 @@ const Template = {
     hammer.on("swipedown", function() {
       Template.NavigateVertical('left', 'down');
     });
-    
-    hammer.on("pinch", function(e) {
-      Interface.Zoom(e);
+    hammer.get('pinch').set({
+      enable: true
     });
-
-    hammer.on("pinchend", function(e) {
-
+    hammer.on('pan', function (e) {
+      PinchZoom.onPan(e);
+    });
+    hammer.on('panend', function (e) {
+      PinchZoom.onPanend();
+    });
+    hammer.on('pinch', function (e) {
+      PinchZoom.onPinch(e);
+    });
+    hammer.on('pinchend', function (e) {
+      PinchZoom.onPinchend();
+    });
+    hammer.on('doubletap', function (e) {
+      PinchZoom.onDoubleTap(e);
     });
 
     $(document).on("keyup", function(e) {
@@ -436,6 +432,7 @@ const Template = {
   Init: function() {
     Template.CreateSettings();
     Template.CreateCase();
+    PinchZoom.init();
     Template.Events();
     Interface.Scale();
   }

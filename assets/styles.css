@@ -433,9 +433,9 @@ input:-webkit-autofill:active
 
 #cards { z-index: 120; }
 #scenes { z-index: 110; }
-.sceneInner, .puzzle { position: absolute;}
+.sceneInner { position: absolute;}
 
-.card, .card .inner, .front, .back, .sceneInner, .scene, .puzzle {
+.card, .card .inner, .front, .back, .sceneInner, .scene {
   display: block;
   width: 825px;
   height: 1152px;
@@ -453,37 +453,45 @@ input:-webkit-autofill:active
   height: 1152px;
 }
 
-.scene0 { background: url(../img/scene_lobby.webp) 0 0 no-repeat; }
-.scene1 { background: url(../img/scene_fossils.webp) 0 0 no-repeat; }
-.scene2 { background: url(../img/scene_egyptian.webp) 0 0 no-repeat; }
-.scene3 { background: url(../img/scene_room.webp) 0 0 no-repeat; }
-.scene4 { background: url(../img/scene_roman.webp) 0 0 no-repeat; }
+.puzzle { 
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
 
-.scene0 .puzzle0 { background: url(../img/puzzle_lobby_0.webp) 0 0 no-repeat; }
-.scene0 .puzzle1 { background: url(../img/puzzle_lobby_1.webp) 0 0 no-repeat; }
-.scene0 .puzzle2 { background: url(../img/puzzle_lobby_2.webp) 0 0 no-repeat; }
-.scene0 .puzzle3 { background: url(../img/puzzle_lobby_3.webp) 0 0 no-repeat; }
-.scene0 .puzzle4 { background: url(../img/puzzle_lobby_4.webp) 0 0 no-repeat; }
-.scene1 .puzzle0 { background: url(../img/puzzle_fossils_0.webp) 0 0 no-repeat; }
-.scene1 .puzzle1 { background: url(../img/puzzle_fossils_1.webp) 0 0 no-repeat; }
-.scene1 .puzzle2 { background: url(../img/puzzle_fossils_2.webp) 0 0 no-repeat; }
-.scene1 .puzzle3 { background: url(../img/puzzle_fossils_3.webp) 0 0 no-repeat; }
-.scene1 .puzzle4 { background: url(../img/puzzle_fossils_4.webp) 0 0 no-repeat; }
-.scene2 .puzzle0 { background: url(../img/puzzle_egyptian_0.webp) 0 0 no-repeat; }
-.scene2 .puzzle1 { background: url(../img/puzzle_egyptian_1.webp) 0 0 no-repeat; }
-.scene2 .puzzle2 { background: url(../img/puzzle_egyptian_2.webp) 0 0 no-repeat; }
-.scene2 .puzzle3 { background: url(../img/puzzle_egyptian_3.webp) 0 0 no-repeat; }
-.scene2 .puzzle4 { background: url(../img/puzzle_egyptian_4.webp) 0 0 no-repeat; }
-.scene3 .puzzle0 { background: url(../img/puzzle_room_0.webp) 0 0 no-repeat; }
-.scene3 .puzzle1 { background: url(../img/puzzle_room_1.webp) 0 0 no-repeat; }
-.scene3 .puzzle2 { background: url(../img/puzzle_room_2.webp) 0 0 no-repeat; }
-.scene3 .puzzle3 { background: url(../img/puzzle_room_3.webp) 0 0 no-repeat; }
-.scene3 .puzzle4 { background: url(../img/puzzle_room_4.webp) 0 0 no-repeat; }
-.scene4 .puzzle0 { background: url(../img/puzzle_roman_0.webp) 0 0 no-repeat; }
-.scene4 .puzzle1 { background: url(../img/puzzle_roman_1.webp) 0 0 no-repeat; }
-.scene4 .puzzle2 { background: url(../img/puzzle_roman_2.webp) 0 0 no-repeat; }
-.scene4 .puzzle3 { background: url(../img/puzzle_roman_3.webp) 0 0 no-repeat; }
-.scene4 .puzzle4 { background: url(../img/puzzle_roman_4.webp) 0 0 no-repeat; }
+.scene0 { background: url(../img/scene_lobby.webp) 0 0 / contain no-repeat; }
+.scene1 { background: url(../img/scene_fossils.webp) 0 0 / contain no-repeat; }
+.scene2 { background: url(../img/scene_egyptian.webp) 0 0 / contain no-repeat; }
+.scene3 { background: url(../img/scene_room.webp) 0 0 / contain no-repeat; }
+.scene4 { background: url(../img/scene_roman.webp) 0 0 / contain no-repeat; }
+
+.scene0 .puzzle0 { background: url(../img/puzzle_lobby_0.webp) 0 0 / contain no-repeat; }
+.scene0 .puzzle1 { background: url(../img/puzzle_lobby_1.webp) 0 0 / contain no-repeat; }
+.scene0 .puzzle2 { background: url(../img/puzzle_lobby_2.webp) 0 0 / contain no-repeat; }
+.scene0 .puzzle3 { background: url(../img/puzzle_lobby_3.webp) 0 0 / contain no-repeat; }
+.scene0 .puzzle4 { background: url(../img/puzzle_lobby_4.webp) 0 0 / contain no-repeat; }
+.scene1 .puzzle0 { background: url(../img/puzzle_fossils_0.webp) 0 0 / contain no-repeat; }
+.scene1 .puzzle1 { background: url(../img/puzzle_fossils_1.webp) 0 0 / contain no-repeat; }
+.scene1 .puzzle2 { background: url(../img/puzzle_fossils_2.webp) 0 0 / contain no-repeat; }
+.scene1 .puzzle3 { background: url(../img/puzzle_fossils_3.webp) 0 0 / contain no-repeat; }
+.scene1 .puzzle4 { background: url(../img/puzzle_fossils_4.webp) 0 0 / contain no-repeat; }
+.scene2 .puzzle0 { background: url(../img/puzzle_egyptian_0.webp) 0 0 / contain no-repeat; }
+.scene2 .puzzle1 { background: url(../img/puzzle_egyptian_1.webp) 0 0 / contain no-repeat; }
+.scene2 .puzzle2 { background: url(../img/puzzle_egyptian_2.webp) 0 0 / contain no-repeat; }
+.scene2 .puzzle3 { background: url(../img/puzzle_egyptian_3.webp) 0 0 / contain no-repeat; }
+.scene2 .puzzle4 { background: url(../img/puzzle_egyptian_4.webp) 0 0 / contain no-repeat; }
+.scene3 .puzzle0 { background: url(../img/puzzle_room_0.webp) 0 0 / contain no-repeat; }
+.scene3 .puzzle1 { background: url(../img/puzzle_room_1.webp) 0 0 / contain no-repeat; }
+.scene3 .puzzle2 { background: url(../img/puzzle_room_2.webp) 0 0 / contain no-repeat; }
+.scene3 .puzzle3 { background: url(../img/puzzle_room_3.webp) 0 0 / contain no-repeat; }
+.scene3 .puzzle4 { background: url(../img/puzzle_room_4.webp) 0 0 / contain no-repeat; }
+.scene4 .puzzle0 { background: url(../img/puzzle_roman_0.webp) 0 0 / contain no-repeat; }
+.scene4 .puzzle1 { background: url(../img/puzzle_roman_1.webp) 0 0 / contain no-repeat; }
+.scene4 .puzzle2 { background: url(../img/puzzle_roman_2.webp) 0 0 / contain no-repeat; }
+.scene4 .puzzle3 { background: url(../img/puzzle_roman_3.webp) 0 0 / contain no-repeat; }
+.scene4 .puzzle4 { background: url(../img/puzzle_roman_4.webp) 0 0 / contain no-repeat; }
 
 .front {
   position: relative;

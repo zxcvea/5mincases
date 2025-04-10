@@ -12,7 +12,7 @@
   <div>
     <style>
 
-      .pinch-zoom-container {
+      #container {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -20,9 +20,10 @@
         width: 825px;
         height: 1152px;
         transform: translate(-50%, -50%) scale(0.4);
+        border: 1px solid red;
       }
 
-      .pinch-zoom-image {
+      .scene {
         position: absolute;
         width: 825px;
         height: 1152px;
@@ -44,8 +45,8 @@
     <button onclick="PinchZoom.zoomIn()">Zoom In</button>
     <button onclick="PinchZoom.zoomOut()">Zoom Out</button>
 
-    <div id="scene" class="pinch-zoom-container">
-      <div id="pinch-zoom-image-id" class="pinch-zoom-image"></div>
+    <div id="container">
+      <div class="scene zoom"></div>
     </div>
 
 
