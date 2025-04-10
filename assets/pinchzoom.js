@@ -190,9 +190,6 @@ const PinchZoom = {
     });
 
     hammer.on('pinch', function (e) {
-      if (e.scale < 1 || e.scale > 3) {
-        return
-      }
 
       // We only calculate the pinch center on the first pinch event as we want the center to
       // stay consistent during the entire pinch
