@@ -18,7 +18,9 @@ const PinchZoom = {
   SCALE: null,
   SCALE_LAST: null,
   CONTAINER: null,
+  CONTAINER_ID: null,
   ELEMENT: null,
+  ELEMENT_ID: null,
   X: 0,
   LAST_X: 0,
   Y: 0,
@@ -83,11 +85,11 @@ const PinchZoom = {
 
     const newX = PinchZoom.restrictRawPos(PinchZoom.LAST_X + deltaX / PinchZoom.SCALE, Math.min(PinchZoom.VIEWPORT_WIDTH, PinchZoom.CUR_WIDTH), PinchZoom.IMG_WIDTH);
     PinchZoom.X = newX;
-    PinchZoom.ELEMENT.style.marginLeft = Math.ceil(newX * PinchZoom.SCALE) + 'px';
+    document.getElementById(PinchZoom.ELEMENT_ID).style.marginLeft = Math.ceil(newX * PinchZoom.SCALE) + 'px';
 
     const newY = PinchZoom.restrictRawPos(PinchZoom.LAST_Y + deltaY / PinchZoom.SCALE, Math.min(PinchZoom.VIEWPORT_HEIGHT, PinchZoom.CUR_HEIGHT), PinchZoom.IMG_HEIGHT);
     PinchZoom.Y = newY;
-    PinchZoom.ELEMENT.style.marginTop = Math.ceil(newY * PinchZoom.SCALE) + 'px';
+    document.getElementById(PinchZoom.ELEMENT_ID).style.marginTop = Math.ceil(newY * PinchZoom.SCALE) + 'px';
   },
 
   zoom: function (scaleBy) {
@@ -96,8 +98,8 @@ const PinchZoom = {
     PinchZoom.CUR_WIDTH = PinchZoom.IMG_WIDTH * PinchZoom.SCALE;
     PinchZoom.CUR_HEIGHT = PinchZoom.IMG_HEIGHT * PinchZoom.SCALE;
 
-    PinchZoom.ELEMENT.style.width = Math.ceil(PinchZoom.CUR_WIDTH) + 'px';
-    PinchZoom.ELEMENT.style.height = Math.ceil(PinchZoom.CUR_HEIGHT) + 'px';
+    document.getElementById(PinchZoom.ELEMENT_ID).style.width = Math.ceil(PinchZoom.CUR_WIDTH) + 'px';
+    document.getElementById(PinchZoom.ELEMENT_ID).style.height = Math.ceil(PinchZoom.CUR_HEIGHT) + 'px';
 
     // Adjust margins to make sure that we aren't out of bounds
     PinchZoom.translate(0, 0);
@@ -159,17 +161,19 @@ const PinchZoom = {
 
   onLoad: function () {
 
-    PinchZoom.ELEMENT = document.getElementById('pinch-zoom-image-id');
-    PinchZoom.CONTAINER = PinchZoom.ELEMENT.parentElement;
+    PinchZoom.ELEMENT_ID = 'pinch-zoom-image-id';
+    PinchZoom.ELEMENT = document.getElementById(PinchZoom.ELEMENT_ID);
+    PinchZoom.CONTAINER_ID = 'scene';
+    PinchZoom.CONTAINER = document.getElementById(PinchZoom.CONTAINER_ID);
 
     PinchZoom.disableImgEventHandlers();
 
     PinchZoom.IMG_WIDTH = PinchZoom.ELEMENT.width;
     PinchZoom.IMG_HEIGHT = PinchZoom.ELEMENT.height;
-    PinchZoom.VIEWPORT_WIDTH = PinchZoom.ELEMENT.offsetWidth;
     PinchZoom.SCALE = PinchZoom.VIEWPORT_WIDTH / PinchZoom.IMG_WIDTH;
     PinchZoom.SCALE_LAST = PinchZoom.SCALE;
-    PinchZoom.VIEWPORT_HEIGHT = PinchZoom.ELEMENT.parentElement.offsetHeight;
+    PinchZoom.VIEWPORT_WIDTH = PinchZoom.CONTAINER.offsetWidth;
+    PinchZoom.VIEWPORT_HEIGHT = PinchZoom.CONTAINER.offsetHeight;
     PinchZoom.CUR_WIDTH = PinchZoom.IMG_WIDTH * PinchZoom.SCALE;
     PinchZoom.CUR_HEIGHT = PinchZoom.IMG_HEIGHT * PinchZoom.SCALE;
 
