@@ -156,15 +156,25 @@ const PinchZoom = {
     PinchZoom.zoomAround(scaleBy, zoomX, zoomY);
   },
 
+  zoomInOrOut: function() {
+    if (PinchZoom.SCALE !== PinchZoom.MAX_SCALE) {
+      PinchZoom.zoomIn();
+    } else {
+      PinchZoom.zoomOut();
+    }
+  },
+
   zoomIn: function() {
     if (PinchZoom.SCALE === PinchZoom.MAX_SCALE) return;
     PinchZoom.SCALE += 0.5;
     PinchZoom.zoomCenter(PinchZoom.SCALE);
+    $(PinchZoom.ZOOM_CSS_CLASS).addClass('zoomPan');
   },
 
   zoomOut: function() {
     if (PinchZoom.SCALE === PinchZoom.MIN_SCALE) return;
     PinchZoom.zoomCenter(1/2);
+    $(PinchZoom.ZOOM_CSS_CLASS).removeClass('zoomPan');
   },
 
   onPan: function(e) {
@@ -213,13 +223,17 @@ const PinchZoom = {
     const c = PinchZoom.rawCenter(e);
     if (PinchZoom.SCALE === PinchZoom.MAX_SCALE) {
       PinchZoom.zoomAround(1/2, c.x, c.y);
+      $(PinchZoom.ZOOM_CSS_CLASS).removeClass('zoomPan');
     } else {
       PinchZoom.SCALE += 0.5;
       PinchZoom.zoomAround(PinchZoom.SCALE, c.x, c.y);
+      $(PinchZoom.ZOOM_CSS_CLASS).addClass('zoomPan');
     }
   },
 
-  init: function() {
+  init: function(width, height) {
+    PinchZoom.IMG_WIDTH = width ?? PinchZoom.IMG_WIDTH;
+    PinchZoom.IMG_HEIGHT = height ?? PinchZoom.IMG_HEIGHT;
     PinchZoom.VIEWPORT_WIDTH = PinchZoom.IMG_WIDTH;
     PinchZoom.VIEWPORT_HEIGHT = PinchZoom.IMG_HEIGHT;
     PinchZoom.SCALE = PinchZoom.VIEWPORT_WIDTH / PinchZoom.IMG_WIDTH;

@@ -74,17 +74,17 @@ const Interface = {
   },
 
   CreateButtons: function() {
-    const homeBtn = '<a href="javascript:void(0);" id="btn-home">&nbsp;</a>';
-    const settingsBtn = '<a href="javascript:void(0);" id="btn-settings">&nbsp;</a>';
+    const shuffleBtn = '<a href="javascript:void(0);" id="btn-shuffle">&nbsp;</a>';
+    const zoomBtn = '<a href="javascript:void(0);" id="btn-zoom">&nbsp;</a>';
     const infoBtn = '<a href="info/" id="btn-info">&nbsp;</a>';
     const enterfsBtn = '<a href="javascript:void(0);" class="btn-enterfs">&nbsp;</a>';
     const exitfsBtn = '<a href="javascript:void(0);" class="btn-exitfs">&nbsp;</a>';
-    $('#container').append(homeBtn);
-    //$('#container').append(settingsBtn);
+    $('#container').append(shuffleBtn);
+    $('#container').append(zoomBtn);
     $('#home').append(infoBtn);
     $('#container, #home').append(enterfsBtn);
     $('#container, #home').append(exitfsBtn);
-    $('.btn-exitfs').hide();
+    $('.btn-exitfs, #btn-zoom').hide();
   },
 
   Start: function() {
@@ -161,6 +161,12 @@ const Interface = {
 
 };
 
+const PANEL = {
+  CASES: 0,
+  SCENES: 1,
+  SOLUTION: 2
+};
+
 const Template = {
 
   DEFAULT_WIDTH: 1406,
@@ -172,8 +178,12 @@ const Template = {
   SCENE_INDEX: 0,
   SCENES_OFFSET: 0,
   DISPLAY_SETTINGS: false,
-  SHOW_SCENES: false,
-  SHOW_SCENE_SOLUTION: false,
+  PANEL_INDEX: 0,
+  PUZZLES: null,
+
+  IsPanel: function(panel) {
+    return Template.PANEL_INDEX === panel;
+  },
 
   CreateSettings: function() {
     let settingsCtn = '';
@@ -202,16 +212,15 @@ const Template = {
   },
 
   BuildScene: function(index, puzzles) {
-    const scene = '<div class="scene"><div class="sceneInner scene' + (index % 5) + '"><div class="puzzle puzzle' + (puzzles[(index % 5)][Data.SCENE_TRACK[(index % 5)]]) + '"></div></div></div>';
+    const sceneIndex = (index % 5);
+    const puzzleIndex = Data.SCENE_TRACK[sceneIndex];
+    const puzzleSolution =  Template.PUZZLES[sceneIndex].Solutions[puzzleIndex];
+    const scene = '<div class="scene"><div class="sceneInner"><div class="scenePuzzle scene' + (sceneIndex) + '"><div class="puzzle puzzle' + (puzzles[sceneIndex][puzzleIndex]) + '"></div></div></div><div class="solutionCtn"><div class="solution">' + Data.Replace(puzzleSolution) + '</div></div></div>';
     $('#scenes').append(scene);
-    Data.SCENE_TRACK[(index % 5)] += 1;
+    Data.SCENE_TRACK[sceneIndex] += 1;
   },
 
-  CreateCase: function() {
-    jQuery.each(Cases, function(index, scenario) {
-      Template.BuildCard(scenario);
-    });
-
+  BuildPuzzles: function() {
     const puzzles = [ Data.RandomPuzzles(), Data.RandomPuzzles(), Data.RandomPuzzles(), Data.RandomPuzzles(), Data.RandomPuzzles() ];
     for (let i = 0; i < 25; i++) {
       Template.BuildScene(i, puzzles);
@@ -220,7 +229,20 @@ const Template = {
     $('#scenes').html($('.scene').sort(function() {
       return Math.random()-0.5;
     }));
-    $('.scene:eq(0) .sceneInner').addClass('zoom');
+    $('.scene:eq(0) .scenePuzzle').addClass('zoom');
+  },
+
+  CreateCase: function() {
+    jQuery.each(Cases, function(index, scenario) {
+      Template.BuildCard(scenario);
+    });
+
+    fetch('data/puzzles.json')
+      .then((response) => response.json())
+      .then((json) => {
+        Template.PUZZLES = json.Puzzles;
+        Template.BuildPuzzles();
+      });
   },
 
   Refresh: function() {
@@ -260,23 +282,28 @@ const Template = {
       return;
     }
 
+    const previousScene = Template.SCENE_INDEX;
+
     let leftPos, movePos;
     leftPos = Template.SCENES_OFFSET;
     movePos = (direction == 'right') ? leftPos - $('#container').width() : leftPos + $('#container').width();
     Template.SCENES_OFFSET = movePos;
     Template.SCENE_INDEX = Template.SCENE_INDEX = (direction == 'right') ? Template.SCENE_INDEX + 1 : Template.SCENE_INDEX - 1;
 
-    $('.scene .sceneInner').removeClass('zoom');
+    $('.scene .scenePuzzle').removeClass('zoom');
     $('#scenes').animate({
       left: movePos + 'px'
     }, 300, function() {
-      $('.scene:eq(' + Template.SCENE_INDEX + ') .sceneInner').addClass('zoom');
+      $('.scene:eq(' + Template.SCENE_INDEX + ') .scenePuzzle').addClass('zoom');
       PinchZoom.IS_ACTIVE = true;
+      $('.scene:eq(' + previousScene + ')').css({ top: 0 });
+      Template.PANEL_INDEX = PANEL.SCENES;
+      $('#btn-zoom').show();
     });
   },
 
   Goto: function(index) {
-    if (Template.SHOW_SCENES) {
+    if (Template.IsPanel(PANEL.SCENES) || Template.IsPanel(PANEL.SOLUTION)) {
       if (index < $('.scene').length) {
         const leftPos = -(index * $('#container').width());
         Template.SCENE_INDEX = index;
@@ -288,26 +315,53 @@ const Template = {
         const leftPos = -(index * $('#container').width());
         Template.CARD_INDEX = index;
         Template.CARDS_OFFSET = leftPos;
-        $('#cards').css('left', leftPos);
+        //$('#cards').css('left', leftPos);
+        $('#cards').animate({
+          left: leftPos
+        }, 300, function() {
+
+        });
       }
     }
   },
 
   ShowScenes: function(direction) {
-    if (direction == 'up' && !Template.SHOW_SCENES) {
-      Template.SHOW_SCENES = true;
+    if (direction == 'up' && Template.IsPanel(PANEL.CASES)) { // Cases => Scenes
+      $('#btn-shuffle').hide();
       let movePos = $('#container').height();
       $('#cards').animate({
         top: -movePos + 'px'
       }, 300, function() {
         PinchZoom.IS_ACTIVE = true;
+        $('#btn-zoom').show();
+        Template.PANEL_INDEX = PANEL.SCENES;
       });
-    } else if (direction == 'down' && Template.SHOW_SCENES) {
-      Template.SHOW_SCENES = false;
+    } else if (direction == 'down' && Template.IsPanel(PANEL.SCENES)) { // Scenes => Cases
+      $('#btn-zoom').hide();
       $('#cards').animate({
         top: '0'
       }, 300, function() {
         PinchZoom.IS_ACTIVE = false;
+        $('#btn-shuffle').show();
+        Template.PANEL_INDEX = PANEL.CASES;
+      });
+    } else if (direction == 'up' && Template.IsPanel(PANEL.SCENES)) { // Scenes => Solution
+      $('#btn-shuffle, #btn-zoom').hide();
+      let movePos = $('#container').height();
+      $('.scene:eq(' + Template.SCENE_INDEX + ')').animate({
+        top: -movePos + 'px'
+      }, 300, function() {
+        PinchZoom.IS_ACTIVE = false;
+        Template.PANEL_INDEX = PANEL.SOLUTION;
+      });
+    } else if (direction == 'down' && Template.IsPanel(PANEL.SOLUTION)) { // Solution => Scenes
+      $('#btn-shuffle').hide();
+      $('.scene:eq(' + Template.SCENE_INDEX + ')').animate({
+        top: '0'
+      }, 300, function() {
+        PinchZoom.IS_ACTIVE = true;
+        $('#btn-zoom').show();
+        Template.PANEL_INDEX = PANEL.SCENES;
       });
     }
   },
@@ -317,7 +371,7 @@ const Template = {
       if (Device.isMobileLandscape()) {
         Template.ShowScenes(altDirection);
       } else {
-        if (Template.SHOW_SCENES) {
+        if (Template.IsPanel(PANEL.SCENES) || Template.IsPanel(PANEL.SOLUTION)) {
           Template.NavigateScenes(direction);
         } else {
           Template.NavigateCards(direction);
@@ -329,7 +383,7 @@ const Template = {
   NavigateVertical: function(direction, altDirection) {
     if (!Template.DISPLAY_SETTINGS && !PinchZoom.IS_ZOOMED_IN) {
       if (Device.isMobileLandscape()) {
-        if (Template.SHOW_SCENES) {
+        if (Template.IsPanel(PANEL.SCENES) || Template.IsPanel(PANEL.SOLUTION)) {
           Template.NavigateScenes(direction);
         } else {
           Template.NavigateCards(direction);
@@ -405,6 +459,18 @@ const Template = {
       $('#home').show();
     });
 
+    $(document).on('click', '#btn-shuffle', function(){
+      if (Template.IsPanel(PANEL.CASES)) {
+        Template.Goto(Data.RandomCase());
+      }
+    });
+
+    $(document).on('click', '#btn-zoom', function(){
+      if (Template.IsPanel(PANEL.SCENES)) {
+        PinchZoom.zoomInOrOut();        
+      }
+    });
+
     $(document).on('click', '#btn-settings', function(){
       if (!Template.DISPLAY_SETTINGS) {
         $('.settings').show();
@@ -432,7 +498,7 @@ const Template = {
   Init: function() {
     Template.CreateSettings();
     Template.CreateCase();
-    PinchZoom.init();
+    PinchZoom.init(825, 1152);
     Template.Events();
     Interface.Scale();
   }

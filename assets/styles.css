@@ -127,14 +127,25 @@ input:-webkit-autofill:active
   z-index: 600;
 }
 
-#btn-settings {
+#btn-shuffle {
   display: block;
   position: absolute;
   top: 0;
-  left: 80px;
+  left: 0;
   width: 80px;
   height: 80px;
-  background: url(../img/icon_settings.webp) 0 0 no-repeat;
+  background: url(../img/icon_shuffle.webp) 0 0 no-repeat;
+  z-index: 600;
+}
+
+#btn-zoom {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 80px;
+  height: 80px;
+  background: url(../img/icon_zoom.webp) 0 0 no-repeat;
   z-index: 600;
 }
 
@@ -433,16 +444,8 @@ input:-webkit-autofill:active
 
 #cards { z-index: 120; }
 #scenes { z-index: 110; }
-.sceneInner { position: absolute;}
 
-.card, .card .inner, .front, .back, .sceneInner, .scene {
-  display: block;
-  width: 825px;
-  height: 1152px;
-  margin: 0 auto;
-}
-
-.card, .scene {
+.card {
   position: relative;
   float: left;
   overflow: hidden;
@@ -451,6 +454,31 @@ input:-webkit-autofill:active
 .card .inner {
   position: absolute;
   height: 1152px;
+}
+
+.scene {
+  position: relative;
+  display: block;
+  float: left;
+  overflow: hidden;
+  width: 825px;
+  height: 2304px;
+  margin: 0 auto;
+}
+
+.card, .card .inner, .front, .back, .sceneInner, .scenePuzzle, .solutionCtn {
+  display: block;
+  width: 825px;
+  height: 1152px;
+  margin: 0 auto;
+}
+
+.sceneInner {
+  overflow: hidden;
+}
+
+.scenePuzzle {
+  position: absolute;
 }
 
 .puzzle { 
@@ -492,6 +520,23 @@ input:-webkit-autofill:active
 .scene4 .puzzle2 { background: url(../img/puzzle_roman_2.webp) 0 0 / contain no-repeat; }
 .scene4 .puzzle3 { background: url(../img/puzzle_roman_3.webp) 0 0 / contain no-repeat; }
 .scene4 .puzzle4 { background: url(../img/puzzle_roman_4.webp) 0 0 / contain no-repeat; }
+
+.solutionCtn {
+  background: url(../img/cardbg.webp) center center / contain no-repeat;
+}
+
+.solution {
+  position: relative;
+  top: 526px;
+  left: 163px;
+}
+
+.solution span {
+  display: block;
+  width: 100px;
+  height: 100px;
+  float: left;
+}
 
 .front {
   position: relative;
@@ -618,31 +663,31 @@ input:-webkit-autofill:active
   margin: 0 10px 0 10px;
 }
 
-.a1 { background: url(../img/a1.webp) center center no-repeat; }
-.a2 { background: url(../img/a2.webp) center center no-repeat; }
-.a3 { background: url(../img/a3.webp) center center no-repeat; }
-.a4 { background: url(../img/a4.webp) center center no-repeat; }
-.a5 { background: url(../img/a5.webp) center center no-repeat; }
-.b1 { background: url(../img/b1.webp) center center no-repeat; }
-.b2 { background: url(../img/b2.webp) center center no-repeat; }
-.b3 { background: url(../img/b3.webp) center center no-repeat; }
-.b4 { background: url(../img/b4.webp) center center no-repeat; }
-.b5 { background: url(../img/b5.webp) center center no-repeat; }
-.c1 { background: url(../img/c1.webp) center center no-repeat; }
-.c2 { background: url(../img/c2.webp) center center no-repeat; }
-.c3 { background: url(../img/c3.webp) center center no-repeat; }
-.c4 { background: url(../img/c4.webp) center center no-repeat; }
-.c5 { background: url(../img/c5.webp) center center no-repeat; }
-.d1 { background: url(../img/d1.webp) center center no-repeat; }
-.d2 { background: url(../img/d2.webp) center center no-repeat; }
-.d3 { background: url(../img/d3.webp) center center no-repeat; }
-.d4 { background: url(../img/d4.webp) center center no-repeat; }
-.d5 { background: url(../img/d5.webp) center center no-repeat; }
-.e1 { background: url(../img/e1.webp) center center no-repeat; }
-.e2 { background: url(../img/e2.webp) center center no-repeat; }
-.e3 { background: url(../img/e3.webp) center center no-repeat; }
-.e4 { background: url(../img/e4.webp) center center no-repeat; }
-.e5 { background: url(../img/e5.webp) center center no-repeat; }
+.a1 { background: url(../img/a1.webp) center center / contain no-repeat; }
+.a2 { background: url(../img/a2.webp) center center / contain no-repeat; }
+.a3 { background: url(../img/a3.webp) center center / contain no-repeat; }
+.a4 { background: url(../img/a4.webp) center center / contain no-repeat; }
+.a5 { background: url(../img/a5.webp) center center / contain no-repeat; }
+.b1 { background: url(../img/b1.webp) center center / contain no-repeat; }
+.b2 { background: url(../img/b2.webp) center center / contain no-repeat; }
+.b3 { background: url(../img/b3.webp) center center / contain no-repeat; }
+.b4 { background: url(../img/b4.webp) center center / contain no-repeat; }
+.b5 { background: url(../img/b5.webp) center center / contain no-repeat; }
+.c1 { background: url(../img/c1.webp) center center / contain no-repeat; }
+.c2 { background: url(../img/c2.webp) center center / contain no-repeat; }
+.c3 { background: url(../img/c3.webp) center center / contain no-repeat; }
+.c4 { background: url(../img/c4.webp) center center / contain no-repeat; }
+.c5 { background: url(../img/c5.webp) center center / contain no-repeat; }
+.d1 { background: url(../img/d1.webp) center center / contain no-repeat; }
+.d2 { background: url(../img/d2.webp) center center / contain no-repeat; }
+.d3 { background: url(../img/d3.webp) center center / contain no-repeat; }
+.d4 { background: url(../img/d4.webp) center center / contain no-repeat; }
+.d5 { background: url(../img/d5.webp) center center / contain no-repeat; }
+.e1 { background: url(../img/e1.webp) center center / contain no-repeat; }
+.e2 { background: url(../img/e2.webp) center center / contain no-repeat; }
+.e3 { background: url(../img/e3.webp) center center / contain no-repeat; }
+.e4 { background: url(../img/e4.webp) center center / contain no-repeat; }
+.e5 { background: url(../img/e5.webp) center center / contain no-repeat; }
 
 #task {
   display: block;
@@ -651,6 +696,8 @@ input:-webkit-autofill:active
   font-size: 36px;
   color: #fff;
 }
+
+.zoomPan { cursor: move; }
 
 @media only screen and (orientation: landscape) {
   #btn-exit-settings {
