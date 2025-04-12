@@ -5,9 +5,6 @@ $(document).ready(function() {
 let Cases;
 
 const Settings = {
-  DEFAULT_SOURCE: 'data-cases.json',
-  CUSTOMSOURCE: 'investigators-custom.js',
-  DATASOURCE: 'investigators-default.js',
   RESET: false,
   STARTUP: true,
   REFRESH: false,
@@ -18,7 +15,17 @@ const Settings = {
 const App = {
 
   Run: function() {
-    Interface.Build();
+    fetch('data/data.json')
+      .then((response) => response.json())
+      .then((json) => {
+        Data.CULPRITS = json.Culprits;
+        fetch('data/cases.json')
+          .then((response) => response.json())
+          .then((json) => {
+            Cases = json.Cases;
+            Interface.Build();
+          });
+      });
   }
 
 };
@@ -67,32 +74,20 @@ const Interface = {
     $('body').append(container);
   },
 
-  CreateStartpage: function() {
-    //const startPage = '<div id="home"><div class="padding"><a href="javascript:void(0);" id="btn-standard" class="cta noselect" dataref="0"></a><a href="javascript:void(0);" id="btn-custom" class="cta noselect" dataref="2"></a></div></div>';
-    //$('#main').append(startPage);
-    Interface.Scale();
-  },
-
   CreateButtons: function() {
     const shuffleBtn = '<a href="javascript:void(0);" id="btn-shuffle">&nbsp;</a>';
     const zoomBtn = '<a href="javascript:void(0);" id="btn-zoom">&nbsp;</a>';
-    const infoBtn = '<a href="info/" id="btn-info">&nbsp;</a>';
     const enterfsBtn = '<a href="javascript:void(0);" class="btn-enterfs">&nbsp;</a>';
     const exitfsBtn = '<a href="javascript:void(0);" class="btn-exitfs">&nbsp;</a>';
     $('#container').append(shuffleBtn);
     $('#container').append(zoomBtn);
-    $('#home').append(infoBtn);
     $('#container, #home').append(enterfsBtn);
     $('#container, #home').append(exitfsBtn);
     $('.btn-exitfs, #btn-zoom').hide();
   },
 
   Start: function() {
-    $('#home').hide();
-      Settings.MODE = 0;
-      Settings.REFRESH = true;
-      Settings.DATASOURCE = Settings.DEFAULT_SOURCE;
-      Data.LoadDataSource(Settings.DATASOURCE);
+    Template.Init();
   },
 
   Scale: function() {
@@ -124,18 +119,6 @@ const Interface = {
       }
     });
 
-    $(document).on('click', '#btn-standard', function(){
-      Interface.Start();
-    });
-
-    $(document).on('click', '#btn-custom', function(){
-      $('#home').hide();
-      Settings.MODE = 2;
-      Settings.REFRESH = true;
-      Settings.DATASOURCE = Settings.CUSTOMSOURCE;
-      Data.LoadDataSource(Settings.DATASOURCE);
-    });
-
     $(document).on('click', '.btn-enterfs', function(){
       Device.ToggleFullscreen();
     });
@@ -153,7 +136,6 @@ const Interface = {
 
   Build: function() {
     Interface.CreateContainer();
-    Interface.CreateStartpage();
     Interface.CreateButtons();
     Interface.Events();
     Interface.Start();
@@ -169,8 +151,6 @@ const PANEL = {
 
 const Template = {
 
-  DEFAULT_WIDTH: 1406,
-  DEFAULT_HEIGHT: 815,
   WINDOW_WIDTH: 0,
   WINDOW_HEIGHT: 0,
   CARD_INDEX: 0,
@@ -202,16 +182,37 @@ const Template = {
   },
 
   BuildCard: function(scenario) {
+    let scOverview = scenario.Overview, 
+      scInstruction = scenario.Instruction,
+      scTask = scenario.Task; 
+    if (scenario.Culprits === 'random') {
+      const overviewCount = (scenario.Overview.match(/{culprit/g) || []).length;
+      const instructionCount = (scenario.Instruction.match(/{culprit/g) || []).length;
+      const taskCount = (scenario.Task.match(/{culprit/g) || []).length;
+      const culpritCount = Math.max(overviewCount, instructionCount, taskCount);
+      const randomCulprits = Data.RandomCulprits(culpritCount);
+      scOverview = Data.ReplaceCulprits(scOverview, randomCulprits);
+      scInstruction = Data.ReplaceCulprits(scInstruction, randomCulprits);
+      scTask = Data.ReplaceCulprits(scTask, randomCulprits);
+    } else if (scenario.Culprits?.length > 0) {
+      scInstruction = Data.ReplaceCulprits(scInstruction, scenario.Culprits.sort(() => Math.random() - 0.5));
+    }
+
+    if (scenario.Clues !== undefined) {
+      const randomClues = scenario.Clues.length > 1 ? scenario.Clues.sort(() => Math.random() - 0.5)[0] : scenario.Clues[0];
+      scInstruction = Data.ReplaceClues(scInstruction, randomClues);
+    }
+
     const caseOf = '<div id="caseOf">The Case of</div>';
     const caseTitle = '<div id="caseTitle">' + scenario.Title + '</div>';
-    const overview = '<div id="overview">' + Data.Replace(scenario.Overview) + '</div>';
-    const taskBox = '<div id="taskBox"><div class="taskBoxMessage"><div id="instruction" class="' + scenario.TextSize + '">' + Data.Replace(scenario.Instruction) + '</div><div id="task">' + scenario.Task + '</div></div></div>';
+    const overview = '<div id="overview">' + Data.Replace(scOverview) + '</div>';
+    const taskBox = '<div id="taskBox"><div class="taskBoxMessage"><div id="instruction" class="' + scenario.TextSize + '">' + Data.Replace(scInstruction) + '</div><div id="task">' + Data.Replace(scTask) + '</div></div></div>';
     const timeLimit = '<div id="timeLimit">' + scenario.TimeLimit + '</div>';
     const template = '<div class="card"><div class="inner"><div class="front ' + scenario.CardBackground + '"><div class="difficulty ' + scenario.Difficulty + '">&nbsp;</div>' + caseOf + caseTitle + overview + timeLimit + taskBox + '</div></div></div>';
     $('#cards').append(template);
   },
 
-  BuildScene: function(index, puzzles) {
+  BuildScene: function(puzzles) {
     Data.PUZZLES_TRACK = puzzles[Data.SCENE_INDEX];
     const puzzleIndex = Data.PUZZLES_TRACK[Data.PUZZLE_INDEX];
     const puzzleSolution =  Template.PUZZLES[Data.SCENE_INDEX].Solutions[puzzleIndex];
@@ -224,7 +225,7 @@ const Template = {
   BuildPuzzles: function() {
     const puzzles = [ Data.RandomPuzzles(), Data.RandomPuzzles(), Data.RandomPuzzles(), Data.RandomPuzzles(), Data.RandomPuzzles() ];
     for (let i = 0; i < 25; i++) {
-      Template.BuildScene(i, puzzles);
+      Template.BuildScene(puzzles);
     }
 
     $('#scenes').html($('.scene').sort(function() {
@@ -326,7 +327,7 @@ const Template = {
     }
   },
 
-  ShowScenes: function(direction) {
+  SwitchPanels: function(direction) {
     if (direction == 'up' && Template.IsPanel(PANEL.CASES)) { // Cases => Scenes
       $('#btn-shuffle').hide();
       let movePos = $('#container').height();
@@ -370,7 +371,7 @@ const Template = {
   NavigateHorizontal: function(direction, altDirection) {
     if (!Template.DISPLAY_SETTINGS && !PinchZoom.IS_ZOOMED_IN) {
       if (Device.isMobileLandscape()) {
-        Template.ShowScenes(altDirection);
+        Template.SwitchPanels(altDirection);
       } else {
         if (Template.IsPanel(PANEL.SCENES) || Template.IsPanel(PANEL.SOLUTION)) {
           Template.NavigateScenes(direction);
@@ -390,7 +391,7 @@ const Template = {
           Template.NavigateCards(direction);
         }
       } else {
-        Template.ShowScenes(altDirection);
+        Template.SwitchPanels(altDirection);
       }
     }
   },
@@ -432,25 +433,25 @@ const Template = {
     });
 
     $(document).on("keyup", function(e) {
-      if (e.which == 39) {
+      if (e.which == 39) { // ->
         e.preventDefault();
         Template.NavigateHorizontal('right', 'down');
-      } else if (e.which == 37) {
+      } else if (e.which == 37) { // <-
         e.preventDefault();
         Template.NavigateHorizontal('left', 'up');
-      } else if (e.which == 38) {
+      } else if (e.which == 38) { // Up
         e.preventDefault();
         Template.NavigateVertical('right', 'up');
-      } else if (e.which == 40) {
+      } else if (e.which == 40) { // Down
         e.preventDefault();
         Template.NavigateVertical('left', 'down');
-      } else if (e.which == 13 || e.which == 32) {
+      } else if (e.which == 13 || e.which == 32) { // Enter or Space
         e.preventDefault();
         Template.Goto(Data.RandomCase());
-      } else if (e.which == 36) {
+      } else if (e.which == 36) { // Home
         e.preventDefault();
         Template.Goto(0);
-      } else if (e.which == 35) {
+      } else if (e.which == 35) { // End
         e.preventDefault();
         Template.Goto(Cases.length - 1);
       } 
@@ -471,29 +472,6 @@ const Template = {
         PinchZoom.zoomInOrOut();        
       }
     });
-
-    $(document).on('click', '#btn-settings', function(){
-      if (!Template.DISPLAY_SETTINGS) {
-        $('.settings').show();
-        Template.DISPLAY_SETTINGS = true;
-        $('.btn-exitfs, .btn-enterfs, #btn-settings').hide();
-      }
-    });
-
-    $(document).on('click', '#btn-exit-settings', function(){
-      if (Template.DISPLAY_SETTINGS) {
-        $('.settings').hide();
-        Template.DISPLAY_SETTINGS = false;
-        if (Template.FULLSCREEN) {
-          $('.btn-enterfs').hide();
-          $('.btn-exitfs, #btn-settings').show();
-        } else {
-          $('.btn-enterfs, #btn-settings').show();
-          $('.btn-exitfs').hide();
-        }
-        $('#data-message').text('');
-      }
-    });
   },
 
   Init: function() {
@@ -511,35 +489,7 @@ const Data = {
   SCENE_INDEX: 0,
   PUZZLES_TRACK: null,
   PUZZLE_INDEX: 0,
-
-  LoadDataSource: function(url) {
-    url = Data.Clean(url);
-    $.ajax({
-      dataType: "json",
-      url: url,
-      async: false,
-      success: function(data) {
-        Cases = data.Cases;
-        if (Settings.STARTUP) {
-          Template.Init();
-          Settings.STARTUP = false;
-        } else {
-          Template.Refresh();
-          if (Settings.DATASOURCE != Settings.CUSTOMSOURCE && !Settings.RESET) {
-            $('#data-message').removeClass('error');
-            $('#data-message').text('Datasource updated. Using custom Cases.');
-          } else if (Settings.RESET && !Settings.REFRESH) {
-            $('#data-message').removeClass('error');
-            $('#data-message').text('Using Default Cases.');
-          }
-        }
-      },
-      error: function() {
-        $('#data-message').addClass('error');
-        $('#data-message').text('Could not get data.');
-      }
-    });
-  },
+  CULPRITS: null,
 
   RandomCase: function () {
     const randomCaseNumber = Math.floor(Math.random() * Cases.length);
@@ -553,6 +503,26 @@ const Data = {
   RandomPuzzles: function() {
     const array = [0, 1, 2, 3, 4];
     return array.sort(() => Math.random() - 0.5);
+  },
+
+  RandomCulprits: function(number) {
+    return Data.CULPRITS.sort(() => Math.random() - 0.5).slice(0, number);
+  },
+
+  ReplaceCulprits: function(text, culprits) {
+    text = text.replace(/\{culprit1\}/g, culprits[0]);
+    text = text.replace(/\{culprit2\}/g, culprits[1]);
+    text = text.replace(/\{culprit3\}/g, culprits[2]);
+    text = text.replace(/\{culprit4\}/g, culprits[3]);
+    return text;
+  },
+
+  ReplaceClues: function(text, clues) {
+    text = text.replace(/\{clue1\}/g, clues[0]);
+    text = text.replace(/\{clue2\}/g, clues[1]);
+    text = text.replace(/\{clue3\}/g, clues[2]);
+    text = text.replace(/\{clue4\}/g, clues[3]);
+    return text;
   },
 
   Replace: function (text) {
@@ -588,23 +558,5 @@ const Data = {
     text = text.replace(/\{E5\}/g, '<span class="code e5">&nbsp;</span>');
     return text;
   },
-
-  Format: function(text) {
-    text = text.replace('\n\n', '<br /><br />');
-    text = text.replace(/\\n/g, '<br />');
-    text = text.replace(/\{/g, '<i>&quot;');
-    text = text.replace(/\}/g, '&quot;</i>');
-    text = text.replace(/\[/g, '<strong>');
-    text = text.replace(/\]/g, '</strong>');
-    return text;
-  },
-
-  Clean: function(url) {
-    if (url.indexOf('dropbox.com') > -1) {
-      url = url.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
-      url = url.replace('?dl=0', '?raw=1');
-    }
-    return url;
-  }
 
 };

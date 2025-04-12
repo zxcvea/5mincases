@@ -34,7 +34,7 @@
       "Difficulty": "veteran",
       "Title": "The Misplaced MacGuffin",
       "Overview": "Our curator has forgotten where he placed the MacGuffin. |He seems to only recall that it was in a room filled with these symbols. |Help him find where |he misplaced it!",
-      "Instruction": "Find a scene that matches these symbols |{A4}{B4}{C4} |<i>(You do not have to solve each scene)</i>",
+      "Instruction": "Find a scene that contains all of these symbols |{A4}{B4}{C4} |<i>(You do not have to solve each scene)</i>",
       "Task": "You do not need to choose or catch a random culprit.",
       "TimeLimit": 3,
       "TextSize": "default",
@@ -52,39 +52,43 @@
     },
     {
       "Difficulty": "veteran",
-      "Title": "The Aardvark Alibi",
-      "Overview": "We have four suspects in custody for interrogation. All proclaim innocence and have provided alibis, but one is lying. |Help us find the culprit!",
-      "Instruction": "Start with [name1], [name2], [name3] and [name4] culprit tiles and remove the [clue1] and [clue2] clues.",
+      "Title": "The Ocean's Four",
+      "Overview": "There's something fishy about these suspects. I'm certain one of them is lying. |But...which one?",
+      "Instruction": "Start with {culprit1}, {culprit2}, {culprit3} and {culprit4} culprit tiles and remove the {clue1} and {clue2} clues.",
       "Task": "Catch one culprit.",
       "TimeLimit": 5,
       "TextSize": "default",
-      "CardBackground": "security"
+      "CardBackground": "security",
+      "Culprits": [ "Frank", "Shelley", "Isaac", "Ruby" ],
+      "Clues": [["Scarf", "Pocket watch"], ["Necklace", "Pocket watch"], ["Necklace", "Newspaper"], ["Scarf", "Newspaper"]]
     },
     {
       "Difficulty": "detective",
       "Title": "Crowd Confusion",
-      "Overview": "I spotted [name1] and [name2] run off into the crowd with the MacGuffin! |Catch them before they can escape.",
+      "Overview": "I spotted {culprit1} and {culprit2} run off into the crowd with the MacGuffin! |Catch them before they can escape.",
       "Instruction": "Mix the culprit tiles. Whenever you solve a scene, flip over two culprit tiles. |<i>(Repeat until you catch both culprits.)</i>",
-      "Task": "Find and catch [name1] and [name2].",
+      "Task": "Find and catch {culprit1} and {culprit2}.",
       "TimeLimit": 5,
       "TextSize": "default",
-      "CardBackground": "default"
+      "CardBackground": "default",
+      "Culprits": "random"
     },
     {
       "Difficulty": "detective",
       "Title": "The Missing Walrus",
       "Overview": "Someone has kidnapped the manager! |Help us find whoever did it!",
       "Instruction": "Mix the culprit tiles. Whenever you solve a scene, flip over two culprit tiles. |<i>(Repeat until you catch both culprits.)</i>",
-      "Task": "Find and catch [name1] and [name2].",
+      "Task": "Find and catch {culprit1} and {culprit2}.",
       "TimeLimit": 5,
       "TextSize": "default",
-      "CardBackground": "security"
+      "CardBackground": "security",
+      "Culprits": "random"
     },
     {
       "Difficulty": "detective",
       "Title": "The Callous Calling Card",
       "Overview": "The thief left their calling card at the scene of the crime. |Catch them before they can escape.",
-      "Instruction": "Collect a clue only if the solved scene contains one of |{A4} or {C3} or {E1} |<i>(Do not collect a clue if the scene does not contain any of these symbols.)</i>",
+      "Instruction": "Collect a clue only if the solved scene contains any one of |{A4} or {C3} or {E1} |<i>(Do not collect a clue if the scene does not contain any of these symbols.)</i>",
       "Task": "Catch one culprit.",
       "TimeLimit": 5,
       "TextSize": "default",
