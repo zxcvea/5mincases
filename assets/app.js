@@ -212,12 +212,13 @@ const Template = {
   },
 
   BuildScene: function(index, puzzles) {
-    const sceneIndex = (index % 5);
-    const puzzleIndex = Data.SCENE_TRACK[sceneIndex];
-    const puzzleSolution =  Template.PUZZLES[sceneIndex].Solutions[puzzleIndex];
-    const scene = '<div class="scene"><div class="sceneInner"><div class="scenePuzzle scene' + (sceneIndex) + '"><div class="puzzle puzzle' + (puzzles[sceneIndex][puzzleIndex]) + '"></div></div></div><div class="solutionCtn"><div class="solution">' + Data.Replace(puzzleSolution) + '</div></div></div>';
+    Data.PUZZLES_TRACK = puzzles[Data.SCENE_INDEX];
+    const puzzleIndex = Data.PUZZLES_TRACK[Data.PUZZLE_INDEX];
+    const puzzleSolution =  Template.PUZZLES[Data.SCENE_INDEX].Solutions[puzzleIndex];
+    const scene = '<div class="scene"><div class="sceneInner"><div class="scenePuzzle scene' + (Data.SCENE_INDEX) + '"><div class="puzzle puzzle' + puzzleIndex + '"></div></div></div><div class="solutionCtn"><div class="solution">' + Data.Replace(puzzleSolution) + '</div></div></div>';
     $('#scenes').append(scene);
-    Data.SCENE_TRACK[sceneIndex] += 1;
+    Data.SCENE_INDEX = Data.PUZZLE_INDEX !== 4 ? Data.SCENE_INDEX : Data.SCENE_INDEX + 1;
+    Data.PUZZLE_INDEX = Data.PUZZLE_INDEX === 4 ? 0 : Data.PUZZLE_INDEX + 1;
   },
 
   BuildPuzzles: function() {
@@ -507,7 +508,9 @@ const Template = {
 
 const Data = {
 
-  SCENE_TRACK: [0, 0, 0, 0, 0],
+  SCENE_INDEX: 0,
+  PUZZLES_TRACK: null,
+  PUZZLE_INDEX: 0,
 
   LoadDataSource: function(url) {
     url = Data.Clean(url);
@@ -549,7 +552,7 @@ const Data = {
 
   RandomPuzzles: function() {
     const array = [0, 1, 2, 3, 4];
-    return array.sort((a, b) => 0.5 - Math.random());
+    return array.sort(() => Math.random() - 0.5);
   },
 
   Replace: function (text) {
