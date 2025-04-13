@@ -115,7 +115,7 @@ const Codex = {
     const movePos = ($('.code').height() * Global.TUMBLER_CODE[i]) + ($('.code').height() / 2);
     $(`.tumbler:eq(${i})`).find('.inner').animate({
       marginTop: -movePos + 'px'
-    }, 300, function() {
+    }, 100, function() {
       Global.TUMBLER_CODE[i] = Global.TUMBLER_CODE[i] + 1;
       if (Global.TUMBLER_CODE[i] === (Global.CODE_COUNT * 2) - 1) {
         Global.TUMBLER_CODE[i] = 3;
@@ -130,7 +130,7 @@ const Codex = {
     const movePos = ($('.code').height() * (Global.TUMBLER_CODE[i] - 1)) - ($('.code').height() / 2);
     $(`.tumbler:eq(${i})`).find('.inner').animate({
       marginTop: -movePos + 'px'
-    }, 300, function() {
+    }, 100, function() {
       Global.TUMBLER_CODE[i] = Global.TUMBLER_CODE[i] - 1;
       if (Global.TUMBLER_CODE[i] === 1) {
         Global.TUMBLER_CODE[i] = Global.TUMBLER_CODE[i] + Global.CODE_COUNT + 1;
