@@ -1,0 +1,128 @@
+html, body { display: block; font-family: Arial, sans-serif; margin: 0; height: 100%; font-size: 12px; border: 0; overflow: hidden; background: #000; }
+html { text-align: left; }
+div { border: 0; }
+a, a:link, a:visited, a:hover { color: #000; font-style: normal; text-decoration: none; outline: 0; }
+.clear { clear: both; height: 0; }
+
+#main {
+  width: 100%;
+  height: 100%;
+  background: #0f0f0f;
+}
+
+#container {
+  display: block;
+  margin: 0;
+  width: 700px;
+  height: 400px;
+  overflow: hidden;
+  z-index: 300;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+#codex {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: 540px;
+  background: url(../../img/tumbler.webp) center center no-repeat;
+  overflow: hidden;
+  padding: 3px 0;
+}
+
+.tumbler {
+  display: block;
+  float: left;
+  width: 70px;
+  height: 200px;
+  margin-right: 10px;
+  cursor: grab;
+  overflow: hidden;
+}
+
+.outer {
+  position: absolute;
+  display: block;
+  width: 70px;
+  height: 200px;
+  cursor: grab;
+  overflow: hidden;
+}
+
+.first {
+  margin-left: 75px;
+}
+
+.last {
+  margin: 0;
+}
+
+.selected {
+  box-shadow: 0 0 0 3px white;
+}
+
+.tumbler .inner {
+  display: block;
+  width: 70px;
+  height: auto;
+  margin: 0 auto;
+  margin-top: -50px;
+}
+
+.code {
+  display: block;
+  width: 70px;
+  height: 100px;
+  margin: 0 auto;
+}
+
+.symbol {
+  position: absolute;
+  display: block;
+  width: 70px;
+  height: 100px;
+  margin: 0 auto;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.active { background-color: #090909; }
+.previous { background-color: #0d0d0d; }
+.next { background-color: #000000; }
+
+.active .symbol { opacity: 1; }
+.previous .symbol { opacity: 0.3; }
+.next .symbol { opacity: 0.1; }
+
+.tumbler0 .symbol0 { background-image: url(../../img/a1.webp); }
+.tumbler0 .symbol1 { background-image: url(../../img/a2.webp); }
+.tumbler0 .symbol2 { background-image: url(../../img/a3.webp); }
+.tumbler0 .symbol3 { background-image: url(../../img/a4.webp); }
+.tumbler0 .symbol4 { background-image: url(../../img/a5.webp); }
+.tumbler1 .symbol0 { background-image: url(../../img/b1.webp); }
+.tumbler1 .symbol1 { background-image: url(../../img/b2.webp); }
+.tumbler1 .symbol2 { background-image: url(../../img/b3.webp); }
+.tumbler1 .symbol3 { background-image: url(../../img/b4.webp); }
+.tumbler1 .symbol4 { background-image: url(../../img/b5.webp); }
+.tumbler2 .symbol0 { background-image: url(../../img/c1.webp); }
+.tumbler2 .symbol1 { background-image: url(../../img/c2.webp); }
+.tumbler2 .symbol2 { background-image: url(../../img/c3.webp); }
+.tumbler2 .symbol3 { background-image: url(../../img/c4.webp); }
+.tumbler2 .symbol4 { background-image: url(../../img/c5.webp); }
+.tumbler3 .symbol0 { background-image: url(../../img/d1.webp); }
+.tumbler3 .symbol1 { background-image: url(../../img/d2.webp); }
+.tumbler3 .symbol2 { background-image: url(../../img/d3.webp); }
+.tumbler3 .symbol3 { background-image: url(../../img/d4.webp); }
+.tumbler3 .symbol4 { background-image: url(../../img/d5.webp); }
+.tumbler4 .symbol0 { background-image: url(../../img/e1.webp); }
+.tumbler4 .symbol1 { background-image: url(../../img/e2.webp); }
+.tumbler4 .symbol2 { background-image: url(../../img/e3.webp); }
+.tumbler4 .symbol3 { background-image: url(../../img/e4.webp); }
+.tumbler4 .symbol4 { background-image: url(../../img/e5.webp); }
