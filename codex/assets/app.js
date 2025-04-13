@@ -81,7 +81,7 @@ const Codex = {
     $('.tumbler:eq(' + Global.SELECTED_TUMBLER + ')').addClass('selected');
   },
 
-  ResetTumblers: function() {
+  ResetSelected: function() {
     Global.SELECTED_TUMBLER = 0;
     $('.tumbler').removeClass('selected');
   },
@@ -199,6 +199,13 @@ const Interface = {
       });
     });
 
+    const hammer = new Hammer(document, {
+      domEvents: true
+    });
+    hammer.on('doubletap', function (e) {
+      Codex.Reset();
+    });
+
     $(document).on("keyup", function(e) {
       if (e.which == 39) { // ->
         e.preventDefault();
@@ -222,13 +229,17 @@ const Interface = {
       } else if (e.which == 35) { // End
         e.preventDefault();
       } else if (e.which == 27) { // Escape
-        Codex.ResetTumblers();
+        Codex.ResetSelected();
       }
     });
 
     $(document).on("click", function() {
       $('.tumbler').removeClass('selected');
       Device.Scale();
+    });
+
+    $(document).on("dblclick", function() {
+      Codex.Reset();
     });
   },
 
