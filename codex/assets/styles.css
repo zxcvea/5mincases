@@ -4,18 +4,26 @@ div { border: 0; }
 a, a:link, a:visited, a:hover { color: #000; font-style: normal; text-decoration: none; outline: 0; }
 .clear { clear: both; height: 0; }
 
-.btn-enterFs, .btn-exitFs {
+.btn-tr {
   display: block;
   position: absolute;
   top: 0;
+  bottom: auto;
   right: 0;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   z-index: 700;
+  transform: rotate(0deg);
 }
 
-.btn-enterFs { background: url(../../img/btn_expand.webp) 0 0 no-repeat; }
-.btn-exitFs { background: url(../../img/btn_close.webp) 0 0 no-repeat; }
+.mobile .btn-tr {
+  top: auto;
+  bottom: 0;
+  transform: rotate(90deg);
+}
+
+.btn-enterFs { background: url(../../img/btn_expand.webp) 0 0 / contain no-repeat; }
+.btn-exitFs { background: url(../../img/btn_close.webp) 0 0 / contain no-repeat; }
 
 #main {
   width: 100%;

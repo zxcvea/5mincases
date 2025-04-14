@@ -39,12 +39,14 @@ const Device = {
   },
 
   Scale: function() {
+    $('#main').removeClass('mobile');
     let scale = 1, rotation = 0;
     Device.IS_ROTATED = false;
     if (Device.isMobilePortrait() && $(window).innerWidth() < $('#container').width()) {
       rotation = '90deg';
       scale =  $(window).innerWidth() / 400;
       Device.IS_ROTATED = true;
+      $('#main').addClass('mobile');
     } else if (Device.isMobileLandscape() && $(window).innerHeight() < $('#container').height()) {
       rotation = '0deg';
       scale = $(window).innerHeight() / $('#container').height();
@@ -147,8 +149,8 @@ const Codex = {
 const Interface = {
 
   CreateButtons: function() {
-    const enterFsBtn = '<a href="javascript:void(0);" class="btn-enterFs">&nbsp;</a>';
-    const exitFsBtn = '<a href="javascript:void(0);" class="btn-exitFs">&nbsp;</a>';
+    const enterFsBtn = '<a href="javascript:void(0);" class="btn-tr btn-enterFs">&nbsp;</a>';
+    const exitFsBtn = '<a href="javascript:void(0);" class="btn-tr btn-exitFs">&nbsp;</a>';
     $('#main').append(`${enterFsBtn}${exitFsBtn}`);
     $('.btn-exitFs').hide();
   },
