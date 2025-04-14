@@ -22,6 +22,7 @@ const Global = {
 
 const Device = {
 
+  FULLSCREEN: false,
   IS_ROTATED: false,
 
   isMobile: function() {
@@ -40,13 +41,13 @@ const Device = {
   Scale: function() {
     let scale = 1, rotation = 0;
     Device.IS_ROTATED = false;
-    if (Device.isMobilePortrait()) {
+    if (Device.isMobilePortrait() && $(window).innerWidth() < $('#container').width()) {
       rotation = '90deg';
-      scale = $(window).innerWidth() / 400;
+      scale =  $(window).innerWidth() / 400;
       Device.IS_ROTATED = true;
-    } else if (Device.isMobileLandscape()) {
+    } else if (Device.isMobileLandscape() && $(window).innerHeight() < $('#container').height()) {
       rotation = '0deg';
-      scale = $(window).innerHeight() / 400;
+      scale = $(window).innerHeight() / $('#container').height();
     } else {
       rotation = '0deg';
     }
@@ -56,16 +57,16 @@ const Device = {
   },
 
   ToggleFullscreen: function() {
-    if (!Settings.FULLSCREEN) {
-      Settings.FULLSCREEN = true;
+    if (!Device.FULLSCREEN) {
+      Device.FULLSCREEN = true;
       document.documentElement.requestFullscreen();
-      $('.btn-enterfs').hide();
-      $('.btn-exitfs').show();
+      $('.btn-enterFs').hide();
+      $('.btn-exitFs').show();
     } else {
-      Settings.FULLSCREEN = false;
+      Device.FULLSCREEN = false;
       document.exitFullscreen();
-      $('.btn-enterfs').show();
-      $('.btn-exitfs').hide();
+      $('.btn-enterFs').show();
+      $('.btn-exitFs').hide();
     }
   },
 
@@ -144,6 +145,13 @@ const Codex = {
 };
 
 const Interface = {
+
+  CreateButtons: function() {
+    const enterFsBtn = '<a href="javascript:void(0);" class="btn-enterFs">&nbsp;</a>';
+    const exitFsBtn = '<a href="javascript:void(0);" class="btn-exitFs">&nbsp;</a>';
+    $('#main').append(`${enterFsBtn}${exitFsBtn}`);
+    $('.btn-exitFs').hide();
+  },
 
   CreateTumbler: function(index) {
     let codes = '';
@@ -241,10 +249,19 @@ const Interface = {
     $(document).on("dblclick", function() {
       Codex.Reset();
     });
+
+    $(document).on('click', '.btn-enterFs', function(){
+      Device.ToggleFullscreen();
+    });
+
+    $(document).on('click', '.btn-exitFs', function(){
+      Device.ToggleFullscreen();
+    });
   },
 
   Init: function() {
     Interface.BuildCodex();
+    Interface.CreateButtons();
     Interface.Events();
     Device.Scale();
   }
