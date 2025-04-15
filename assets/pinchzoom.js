@@ -1,6 +1,6 @@
 const PinchZoom = {
   MIN_SCALE: 1, // 1=scaling when first loaded
-  MAX_SCALE: 2,
+  MAX_SCALE: 1.5,
 
   // HammerJS fires "pinch" and "pan" events that are cumulative in nature and not
   // deltas. Therefore, we need to store the "last" values of scale, x and y so that we can
@@ -11,8 +11,8 @@ const PinchZoom = {
   // coordinates when the UI is updated. It also simplifies our calculations as these
   // coordinates are without respect to the current scale.
 
-  IMG_WIDTH: 825,
-  IMG_HEIGHT: 1152,
+  IMG_WIDTH: 1024,
+  IMG_HEIGHT: 768,
   VIEWPORT_WIDTH: null,
   VIEWPORT_HEIGHT: null,
   SCALE: null,

@@ -32,8 +32,14 @@ const App = {
 
 const Device = {
 
+  FULLSCREEN: false,
+  MOBILE_PORTRAIT_WIDTH: 567,
+  MOBILE_PORTRAIT_HEIGHT: 768,
+  VIEWPORT_WIDTH: 1024,
+  VIEWPORT_HEIGHT: 768,
+
   isMobile: function() {
-    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    const regex = /Mobi|Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i;
     return regex.test(navigator.userAgent);
   },
 
@@ -49,13 +55,13 @@ const Device = {
     if (!Settings.FULLSCREEN) {
       Settings.FULLSCREEN = true;
       document.documentElement.requestFullscreen();
-      $('.btn-enterfs').hide();
-      $('.btn-exitfs').show();
+      $('.btn-enterFs').hide();
+      $('.btn-exitFs').show();
     } else {
       Settings.FULLSCREEN = false;
       document.exitFullscreen();
-      $('.btn-enterfs').show();
-      $('.btn-exitfs').hide();
+      $('.btn-enterFs').show();
+      $('.btn-exitFs').hide();
     }
   },
 
@@ -63,27 +69,21 @@ const Device = {
 
 const Interface = {
 
-  DEFAULT_WIDTH: 825,
-  DEFAULT_HEIGHT: 1152,
-  WINDOW_WIDTH: 0,
-  WINDOW_HEIGHT: 0,
-  SCALE: 1,
-
   CreateContainer: function() {
-    const container = '<div id="main"><div id="container"><div id="cards"></div><div id="scenes"></div></div></div>';
+    const container = '<div id="main"><div id="container"><div id="cardsOverlay"><div id="cardsCtn"><div id="cards"></div></div></div><div id="scenes"></div></div></div>';
     $('body').append(container);
   },
 
   CreateButtons: function() {
     const shuffleBtn = '<a href="javascript:void(0);" id="btn-shuffle">&nbsp;</a>';
-    const zoomBtn = '<a href="javascript:void(0);" id="btn-zoom">&nbsp;</a>';
-    const enterfsBtn = '<a href="javascript:void(0);" class="btn-enterfs">&nbsp;</a>';
-    const exitfsBtn = '<a href="javascript:void(0);" class="btn-exitfs">&nbsp;</a>';
+    const zoomBtn = '<a href="javascript:void(0);" id="btn-zoomIn">&nbsp;</a><a href="javascript:void(0);" id="btn-zoomOut">&nbsp;</a>';
+    const enterFsBtn = '<a href="javascript:void(0);" class="btn-enterFs">&nbsp;</a>';
+    const exitFsBtn = '<a href="javascript:void(0);" class="btn-exitFs">&nbsp;</a>';
     $('#container').append(shuffleBtn);
     $('#container').append(zoomBtn);
-    $('#container, #home').append(enterfsBtn);
-    $('#container, #home').append(exitfsBtn);
-    $('.btn-exitfs, #btn-zoom').hide();
+    $('#container, #home').append(enterFsBtn);
+    $('#container, #home').append(exitFsBtn);
+    $('.btn-exitFs, #btn-zoomIn, #btn-zoomOut').hide();
   },
 
   Start: function() {
@@ -91,46 +91,78 @@ const Interface = {
   },
 
   Scale: function() {
-    let scale, rotation;
-    scale = (462 / Interface.DEFAULT_WIDTH);
+    $('#main').removeClass('portrait');
+    let scale = 1;
+    const wRatio = $(window).innerWidth() / $(window).innerHeight();
+    const cRatio = $('#container').innerWidth() / $('#container').innerHeight();
 
-    if (Device.isMobileLandscape()) {
-      rotation = '90deg';
-      scale = ($(window).innerHeight() - 20) / Interface.DEFAULT_WIDTH;
-    } else if (Device.isMobilePortrait()) {
-      rotation = '0deg';
-      scale = ($(window).innerWidth() - 20) / Interface.DEFAULT_WIDTH;
-    } else {
-      rotation = '0deg';
+    if (window.matchMedia("(orientation: portrait)").matches) {
+      $('#main').addClass('portrait');
+      if (wRatio > cRatio) {
+        scale = ($(window).innerHeight() < $('#container').height()) ? $(window).innerHeight() / $('#container').height() : 1; 
+      } else {
+        scale = ($(window).innerWidth() < $('#container').width()) ? $(window).innerWidth() / $('#container').width() : 1; 
+      }
+      if (!PinchZoom.IS_ZOOMED_IN) {
+        PinchZoom.init(768, 1024);
+      }
+    } else if (window.matchMedia("(orientation: landscape)").matches) {
+      if (wRatio > cRatio) {
+        scale = ($(window).innerHeight() < $('#container').height()) ? $(window).innerHeight() / $('#container').height() : 1; 
+      } else {
+        scale = ($(window).innerWidth() < $('#container').width()) ? $(window).innerWidth() / $('#container').width() : 1; 
+      }
+      if (!PinchZoom.IS_ZOOMED_IN) {
+        PinchZoom.init(1024, 768);
+      }
     }
 
-    $('#home, #container, .settings').css({
-      transform: "translate(-50%, -50%) " + "scale(" + scale + ") " + "rotate(" + rotation + ")"
+    $('#container').css({
+      transform: "translate(-50%, -50%) " + "scale(" + scale + ") "
     });
 
-    $('#cards').width(($('.card:visible').length * $('#container').width()) + 1);
-    $('#scenes').width(($('.scene:visible').length * $('#container').width()) + 1);
+    $('#cards').width(($('.card').length * $('#container').width()) + 1);
+    $('#scenes').width((25 * $('#container').width()) + 1);
+
+    Template.CARDS_OFFSET = -(Template.CARD_INDEX * $('#cardsCtn').width());
+    $('#cards').css({ left: Template.CARDS_OFFSET + 'px' });
+    Template.SCENES_OFFSET = -(Template.SCENE_INDEX * $('#container').width());
+    $('#scenes').css({ left: Template.SCENES_OFFSET + 'px' });
+
+    if (Template.PANEL_INDEX === PANEL.SOLUTION) {
+      $('.scene:eq(' + Template.SCENE_INDEX + ')').css({ top: -($('#container').height()) + 'px' });
+    } else if (Template.PANEL_INDEX !== PANEL.CASES) {
+      $('#cardsOverlay').css({ top: -($('#container').height()) + 'px' });
+    }
+
+    if ($('#cardsCtn').get(0).getBoundingClientRect().width < $('#cardsCtn').width()) {
+      const cardScale = Device.isMobilePortrait() ? 1.5 : ($(window).innerHeight() / $('#container').get(0).getBoundingClientRect().height);
+      $('#cardsCtn').css({ transform: "scale(" + cardScale + ")" });
+    } else {
+      $('#cardsCtn').css({ transform: "scale(1)" });
+    }
   },
 
   Events: function() {
     $(document).click(function() {
-      if ($('#container').width() != Interface.WINDOW_WIDTH || $('#container').height() != Interface.WINDOW_HEIGHT) {
+      if ($('#container').width() != Device.VIEWPORT_WIDTH || $('#container').height() != Device.VIEWPORT_HEIGHT) {
         Interface.Scale();
       }
     });
 
-    $(document).on('click', '.btn-enterfs', function(){
+    $(document).on('click', '.btn-enterFs', function(){
       Device.ToggleFullscreen();
     });
 
-    $(document).on('click', '.btn-exitfs', function(){
+    $(document).on('click', '.btn-exitFs', function(){
       Device.ToggleFullscreen();
     });
 
     window.matchMedia("(orientation: portrait)").addEventListener("change", e => {
-      if (Device.isMobile()) {
-        Interface.Scale();
-      }
+      Interface.Scale();
+    });
+    window.matchMedia("(orientation: landscape)").addEventListener("change", e => {
+      Interface.Scale();
     });
   },
 
@@ -175,7 +207,7 @@ const Template = {
       $('body').append(settingsCtn);
     }
 
-    $('.btn-exitfs, .settings').hide();
+    $('.btn-exitFs, .settings').hide();
     $('#filter ul li a:not(.base)').addClass('inactive');
     $('#filter ul li a.base').addClass('active');
     Settings.REFRESH = false;
@@ -245,6 +277,8 @@ const Template = {
         Template.PUZZLES = json.Puzzles;
         Template.BuildPuzzles();
       });
+
+    $('#scenes').css({ opacity: 0.3 });
   },
 
   Refresh: function() {
@@ -268,7 +302,8 @@ const Template = {
 
     let leftPos, movePos;
     leftPos = Template.CARDS_OFFSET;
-    movePos = (direction == 'right') ? leftPos - $('#container').width() : leftPos + $('#container').width();
+    const cardWidth = $('#cardsCtn').width();
+    movePos = (direction == 'right') ? leftPos - cardWidth : leftPos + cardWidth;
     Template.CARDS_OFFSET = movePos;
     Template.CARD_INDEX = Template.CARD_INDEX = (direction == 'right') ? Template.CARD_INDEX + 1 : Template.CARD_INDEX - 1;
 
@@ -300,7 +335,7 @@ const Template = {
       PinchZoom.IS_ACTIVE = true;
       $('.scene:eq(' + previousScene + ')').css({ top: 0 });
       Template.PANEL_INDEX = PANEL.SCENES;
-      $('#btn-zoom').show();
+      $('#btn-zoomIn').show();
     });
   },
 
@@ -314,10 +349,9 @@ const Template = {
       }
     } else {
       if (index < Cases.length) {
-        const leftPos = -(index * $('#container').width());
+        const leftPos = -(index * $('#cardsCtn').width());
         Template.CARD_INDEX = index;
         Template.CARDS_OFFSET = leftPos;
-        //$('#cards').css('left', leftPos);
         $('#cards').animate({
           left: leftPos
         }, 300, function() {
@@ -331,24 +365,26 @@ const Template = {
     if (direction == 'up' && Template.IsPanel(PANEL.CASES)) { // Cases => Scenes
       $('#btn-shuffle').hide();
       let movePos = $('#container').height();
-      $('#cards').animate({
+      $('#cardsOverlay').animate({
         top: -movePos + 'px'
       }, 300, function() {
         PinchZoom.IS_ACTIVE = true;
-        $('#btn-zoom').show();
+        $('#btn-zoomIn').show();
         Template.PANEL_INDEX = PANEL.SCENES;
       });
+      $('#scenes').animate({ opacity: 1 }, 300);
     } else if (direction == 'down' && Template.IsPanel(PANEL.SCENES)) { // Scenes => Cases
-      $('#btn-zoom').hide();
-      $('#cards').animate({
+      $('#btn-zoomIn').hide();
+      $('#cardsOverlay').animate({
         top: '0'
       }, 300, function() {
         PinchZoom.IS_ACTIVE = false;
         $('#btn-shuffle').show();
         Template.PANEL_INDEX = PANEL.CASES;
       });
+      $('#scenes').animate({ opacity: 0.3 }, 300);
     } else if (direction == 'up' && Template.IsPanel(PANEL.SCENES)) { // Scenes => Solution
-      $('#btn-shuffle, #btn-zoom').hide();
+      $('#btn-shuffle, #btn-zoomIn').hide();
       let movePos = $('#container').height();
       $('.scene:eq(' + Template.SCENE_INDEX + ')').animate({
         top: -movePos + 'px'
@@ -362,37 +398,23 @@ const Template = {
         top: '0'
       }, 300, function() {
         PinchZoom.IS_ACTIVE = true;
-        $('#btn-zoom').show();
+        $('#btn-zoomIn').show();
         Template.PANEL_INDEX = PANEL.SCENES;
       });
     }
   },
 
   NavigateHorizontal: function(direction, altDirection) {
-    if (!Template.DISPLAY_SETTINGS && !PinchZoom.IS_ZOOMED_IN) {
-      if (Device.isMobileLandscape()) {
-        Template.SwitchPanels(altDirection);
-      } else {
-        if (Template.IsPanel(PANEL.SCENES) || Template.IsPanel(PANEL.SOLUTION)) {
-          Template.NavigateScenes(direction);
-        } else {
-          Template.NavigateCards(direction);
-        }
-      }
+    if ((Template.IsPanel(PANEL.SCENES) || Template.IsPanel(PANEL.SOLUTION)) && !PinchZoom.IS_ZOOMED_IN) {
+      Template.NavigateScenes(direction);
+    } else {
+      Template.NavigateCards(direction);
     }
   },
 
   NavigateVertical: function(direction, altDirection) {
-    if (!Template.DISPLAY_SETTINGS && !PinchZoom.IS_ZOOMED_IN) {
-      if (Device.isMobileLandscape()) {
-        if (Template.IsPanel(PANEL.SCENES) || Template.IsPanel(PANEL.SOLUTION)) {
-          Template.NavigateScenes(direction);
-        } else {
-          Template.NavigateCards(direction);
-        }
-      } else {
-        Template.SwitchPanels(altDirection);
-      }
+    if (!PinchZoom.IS_ZOOMED_IN) {
+     Template.SwitchPanels(altDirection);
     }
   },
 
@@ -467,9 +489,19 @@ const Template = {
       }
     });
 
-    $(document).on('click', '#btn-zoom', function(){
+    $(document).on('click', '#btn-zoomIn', function(){
       if (Template.IsPanel(PANEL.SCENES)) {
-        PinchZoom.zoomInOrOut();        
+        PinchZoom.zoomIn();      
+        $('#btn-zoomIn').hide();  
+        $('#btn-zoomOut').show();
+      }
+    });
+
+    $(document).on('click', '#btn-zoomOut', function(){
+      if (Template.IsPanel(PANEL.SCENES)) {
+        PinchZoom.zoomOut();    
+        $('#btn-zoomOut').hide();  
+        $('#btn-zoomIn').show();    
       }
     });
   },
@@ -477,7 +509,7 @@ const Template = {
   Init: function() {
     Template.CreateSettings();
     Template.CreateCase();
-    PinchZoom.init(825, 1152);
+    PinchZoom.init(1024, 768);
     Template.Events();
     Interface.Scale();
   }
