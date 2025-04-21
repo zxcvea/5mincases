@@ -235,6 +235,11 @@ const Template = {
       scInstruction = Data.ReplaceClues(scInstruction, randomClues);
     }
 
+    if (scenario.Symbols !== undefined) {
+      const randomSymbols = scenario.Symbols.length > 1 ? scenario.Symbols.sort(() => Math.random() - 0.5)[0] : scenario.Symbols[0];
+      scInstruction = Data.ReplaceSymbols(scInstruction, randomSymbols);
+    }
+
     const caseOf = '<div id="caseOf">The Case of</div>';
     const caseTitle = '<div id="caseTitle">' + scenario.Title + '</div>';
     const overview = '<div id="overview">' + Data.Replace(scOverview) + '</div>';
@@ -554,6 +559,11 @@ const Data = {
     text = text.replace(/\{clue2\}/g, clues[1]);
     text = text.replace(/\{clue3\}/g, clues[2]);
     text = text.replace(/\{clue4\}/g, clues[3]);
+    return text;
+  },
+
+  ReplaceSymbols: function(text, symbols) {
+    text = text.replace(/\{symbols%\}/g, symbols);
     return text;
   },
 

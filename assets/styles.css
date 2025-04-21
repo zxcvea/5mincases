@@ -269,14 +269,14 @@ a, a:link, a:visited, a:hover { color: #000; font-style: normal; text-decoration
   position: relative;
   top: 50%;
   left: 50%;
-  margin-top: -50px;
-  margin-left: -250px;
+  margin-top: -40px;
+  margin-left: -200px;
 }
 
 .solution span {
   display: block;
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   float: left;
 }
 
